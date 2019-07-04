@@ -1,0 +1,6 @@
+/build/**
+/coverage/**
+/docs/**
+/jsdoc/**
+/config
+serviceWorker.js
