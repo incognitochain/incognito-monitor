@@ -1,0 +1,22 @@
+.heal-panel {
+  .no-padding {
+    padding: 0;
+  }
+
+  .status {
+    &-offline {
+      background-color: #db3737;
+      color: white;
+    }
+
+    &-online {
+      background-color: #0f9960;
+      color: white;
+    }
+
+    &-offline,
+    &-online {
+      padding: 0 10px;
+    }
+  }
+}

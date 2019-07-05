@@ -1,10 +1,67 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
+const fs = require('fs');
+const path = require('path');
+const ConstantRPC = require('./constant-rpc');
 
-function createWindow() {
-  // Create the browser window.
-  const win = new BrowserWindow({ width: 800, height: 600 });
+const dataPath = path.join(__dirname, '../data/nodes');
 
-  win.loadURL('http://localhost:3000/');
+function readNodes() {
+  const nodesInString = fs.readFileSync(dataPath) || '[]';
+  return JSON.parse(nodesInString);
 }
 
-app.on('ready', createWindow);
+async function nodeWithStatus(node) {
+  const rpc = new ConstantRPC(node.host, node.port);
+  let status = 'OFFLINE';
+  let totalBlocks;
+  try {
+    await rpc.GetNetworkInfo();
+    totalBlocks = await rpc.GetBlockCount(0);
+
+    status = 'ONLINE';
+  } catch (error) {
+    //
+  }
+  return {
+    ...node,
+    status,
+    totalBlocks,
+  };
+}
+
+ipcMain.on('new-node', (event, newNode) => {
+  const nodes = readNodes();
+  const newNodes = [...nodes, newNode];
+
+  const err = fs.writeFileSync(dataPath, newNodes);
+
+  if (err) {
+    console.log(err);
+  } else {
+    event.returnValue = nodeWithStatus(newNode);
+  }
+});
+
+ipcMain.on('get-nodes', async (event) => {
+  const nodesInString = fs.readFileSync(dataPath) || '[]';
+  let nodes = JSON.parse(nodesInString);
+  nodes = await Promise.all(nodes.map(nodeWithStatus));
+  event.returnValue = JSON.stringify(nodes);
+});
+
+function start() {
+  const mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 720,
+    autoHideMenuBar: true,
+    useContentSize: true,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  });
+  mainWindow.loadURL('http://localhost:3000');
+  mainWindow.focus();
+}
+
+app.on('ready', start);

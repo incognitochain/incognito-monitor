@@ -9,18 +9,18 @@ import { Iterable } from 'immutable';
  * @param {Object} state
  */
 export const stateTransformer = (state) => {
-    const newState = {};
-    const keys = Object.keys(state);
-    keys.forEach((key) => {
-        const value = state[key];
-        if (Iterable.isIterable(value)) {
-            newState[key] = value.toJS();
-        } else {
-            newState[key] = value;
-        }
-    });
+  const newState = {};
+  const keys = Object.keys(state);
+  keys.forEach((key) => {
+    const value = state[key];
+    if (Iterable.isIterable(value)) {
+      newState[key] = value.toJS();
+    } else {
+      newState[key] = value;
+    }
+  });
 
-    return newState;
+  return newState;
 };
 
 
@@ -29,14 +29,14 @@ const middlewares = [thunk, promiseMiddleware];
 if (!process.env.NODE_ENV
     || process.env.NODE_ENV === 'development'
     || process.env.NODE_ENV === 'test') {
-    const logger = createLogger({ stateTransformer });
-    middlewares.push(logger);
+  const logger = createLogger({ stateTransformer });
+  middlewares.push(logger);
 }
 
 const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
 
 const configStore = reducers => createStoreWithMiddleware(
-    combineReducers({ ...reducers })
+  combineReducers({ ...reducers })
 );
 
 export default configStore;

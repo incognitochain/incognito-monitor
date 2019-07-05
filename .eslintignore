@@ -4,3 +4,4 @@
 /jsdoc/**
 /config
 serviceWorker.js
+/electron
