@@ -4,7 +4,7 @@ import { InputGroup, FormGroup } from '@blueprintjs/core';
 
 function NewNodeDialogBody({ onChange }) {
   return (
-    <div>
+    <div className="new-node-dialog-body">
       <FormGroup
         label="Name"
         labelFor="name"

@@ -25,6 +25,7 @@ function NewNodeDialog({
       isOpen={isOpen}
       canOutsideClickClose
       onClose={onClose}
+      className="new-node-dialog"
       body={<NewNodeDialogBody onChange={updateNode} />}
       footer={<NewNodeDialogFooter onAdd={() => onAdd(node)} onCancel={onClose} />}
     />

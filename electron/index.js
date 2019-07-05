@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
-const ConstantRPC = require('./constant-rpc');
+const ConstantRPC = require('./incognitoRpc');
 
 const dataPath = path.join(__dirname, '../data/nodes');
 
@@ -14,9 +14,13 @@ async function nodeWithStatus(node) {
   const rpc = new ConstantRPC(node.host, node.port);
   let status = 'OFFLINE';
   let totalBlocks;
+  let beaconHeight;
   try {
     await rpc.GetNetworkInfo();
     totalBlocks = await rpc.GetBlockCount(0);
+
+    const state = await rpc.GetBeaconBestState();
+    beaconHeight = state.BeaconHeight;
 
     status = 'ONLINE';
   } catch (error) {
@@ -26,6 +30,7 @@ async function nodeWithStatus(node) {
     ...node,
     status,
     totalBlocks,
+    beaconHeight,
   };
 }
 

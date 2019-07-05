@@ -8,6 +8,7 @@ import {
   Alignment,
   Classes,
 } from '@blueprintjs/core';
+import { Link } from 'react-router-dom';
 
 import logo from 'logo.svg';
 import './index.scss';
@@ -23,8 +24,12 @@ function Navbar() {
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
         <NavbarDivider />
-        <Button className={Classes.MINIMAL} icon="home" text="Home" />
-        <Button className={Classes.MINIMAL} icon="document" text="Files" />
+        <Link to="/">
+          <Button className={Classes.MINIMAL} icon="layout-grid" text="Nodes" />
+        </Link>
+        <Link to="/blocks">
+          <Button className={Classes.MINIMAL} icon="layout-grid" text="Blocks" />
+        </Link>
       </NavbarGroup>
     </BSNavBar>
   );

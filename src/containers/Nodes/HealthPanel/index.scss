@@ -1,6 +1,11 @@
-.heal-panel {
+.health-panel {
   .no-padding {
     padding: 0;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
   }
 
   .status {

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Table from 'components/common/Table';
 
 import './index.scss';
-import { Button, ButtonGroup } from '@blueprintjs/core';
+import {
+  Alignment, Button, ButtonGroup, Card,
+} from '@blueprintjs/core';
 import NewNodeDialog from 'components/NewNodeDialog';
 
 function HealthPanel({
@@ -30,13 +32,20 @@ function HealthPanel({
   }, {
     key: 'totalBlocks',
     displayName: 'Total Blocks',
+  }, {
+    key: 'beaconHeight',
+    displayName: 'Beacon Height',
   }];
 
   return (
-    <div className="heal-panel">
-      <ButtonGroup minimal>
-        <Button icon="add" onClick={onToggleDialog} />
-      </ButtonGroup>
+    <Card className="health-panel">
+      <div className="actions">
+        <ButtonGroup alignText={Alignment.RIGHT} minimal>
+          <Button icon="add" onClick={onToggleDialog}>Add</Button>
+          <Button icon="import">Import</Button>
+          <Button icon="export">Export</Button>
+        </ButtonGroup>
+      </div>
       <NewNodeDialog
         isOpen={showNewNodeDialog}
         canOutsideClickClose
@@ -44,7 +53,7 @@ function HealthPanel({
         onAdd={onAddNode}
       />
       <Table data={data} columns={columns} />
-    </div>
+    </Card>
   );
 }
 

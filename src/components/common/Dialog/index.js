@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { Dialog as BluePrintDialog, Classes } from '@blueprintjs/core';
 
 function Dialog({
-  title, body, footer, canOutsideClickClose, isOpen, onClose,
+  title, body, footer, canOutsideClickClose, isOpen, onClose, className,
 }) {
   return (
     <BluePrintDialog
-      className="dialog"
+      className={className}
       onClose={onClose}
       title={title}
       canOutsideClickClose={canOutsideClickClose}
@@ -38,6 +38,7 @@ Dialog.propTypes = {
   canOutsideClickClose: PropTypes.bool,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
+  className: PropTypes.string,
 };
 
 Dialog.defaultProps = {
@@ -47,6 +48,7 @@ Dialog.defaultProps = {
   canOutsideClickClose: false,
   isOpen: false,
   onClose: undefined,
+  className: '',
 };
 
 export default React.memo(Dialog);
