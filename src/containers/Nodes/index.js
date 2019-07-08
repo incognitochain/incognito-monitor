@@ -1,36 +1,36 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Tabs, Tab } from '@blueprintjs/core';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import _ from 'lodash';
+
+import electron from 'utils/electron';
 
 import HealthPanel from './HealthPanel';
 import ConnectionPanel from './ConnectionPanel';
 
 import './index.scss';
-import TEST_NODES from './test_nodes.json';
+import { addNode, getNodes } from './actions';
 
-
-// Import ipcRenderer of electron
-// if app is running on electron
-let ipc;
-if (window.require) {
-  const { ipcRenderer } = window.require('electron');
-  ipc = ipcRenderer;
-}
 
 class Nodes extends Component {
-  constructor(props) {
-    super(props);
+  state = {
+    showNewNodeDialog: false,
+    newNodeError: null,
+  };
 
-    let nodes = TEST_NODES;
+  componentDidMount() {
+    this.getNodes();
+  }
 
-    if (ipc) {
-      const nodesInString = ipc.sendSync('get-nodes');
-      nodes = JSON.parse(nodesInString);
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { addingNode } = this.props;
+    const { addingNode: prevAddingNode } = prevProps;
+
+    if (prevAddingNode && !addingNode) {
+      this.onToggleDialog();
     }
-
-    this.state = {
-      nodes,
-      showNewNodeDialog: false,
-    };
   }
 
   /**
@@ -38,18 +38,15 @@ class Nodes extends Component {
    * @param {Object} newNode
    */
   onAddNode = (newNode) => {
-    const { nodes } = this.state;
-    const newNodes = [...nodes, newNode];
-    let success = true;
+    const { actions } = this.props;
 
-    if (ipc) {
-      const nodesInString = JSON.stringify(newNodes, null, 4);
-      success = ipc.sendSync('new-node', nodesInString);
+    const error = this.validateNewNode(newNode);
+
+    if (!error) {
+      actions.addNode(newNode);
     }
 
-    if (success) {
-      this.setState({ nodes: newNodes, showNewNodeDialog: false });
-    }
+    this.setState({ newNodeError: error });
   };
 
   /**
@@ -57,11 +54,44 @@ class Nodes extends Component {
    */
   onToggleDialog = () => {
     const { showNewNodeDialog } = this.state;
-    this.setState({ showNewNodeDialog: !showNewNodeDialog });
+    this.setState({ showNewNodeDialog: !showNewNodeDialog, newNodeError: null });
   };
 
+  onExport = () => {
+    electron.sendSync('export-nodes');
+  };
+
+  onImport = () => {
+    electron.sendSync('import-nodes');
+    this.getNodes();
+  };
+
+  getNodes() {
+    const { actions } = this.props;
+    actions.getNodes();
+  }
+
+  validateNewNode(newNode) {
+    if (_.some([
+      newNode.name,
+      newNode.host,
+      newNode.port,
+    ], _.isEmpty)) {
+      return 'Fields must not be empty';
+    }
+
+    const { nodes } = this.props;
+
+    if (_.some(nodes, node => node.host === newNode.host && node.port === newNode.port)) {
+      return 'An existing node has same address and port with this node';
+    }
+
+    return null;
+  }
+
   render() {
-    const { showNewNodeDialog, nodes } = this.state;
+    const { nodes, gettingNodes, addingNode } = this.props;
+    const { showNewNodeDialog, newNodeError } = this.state;
 
     return (
       <div className="nodes">
@@ -75,6 +105,10 @@ class Nodes extends Component {
                 showNewNodeDialog={showNewNodeDialog}
                 onAddNode={this.onAddNode}
                 onToggleDialog={this.onToggleDialog}
+                onExport={this.onExport}
+                onImport={this.onImport}
+                loading={gettingNodes || addingNode}
+                newNodeError={newNodeError}
               />
             )}
           />
@@ -85,4 +119,34 @@ class Nodes extends Component {
   }
 }
 
-export default Nodes;
+const mapStateToProps = state => ({
+  nodes: state.NodesReducer.get('nodes'),
+  newNode: state.NodesReducer.get('newNode'),
+  gettingNodes: state.NodesReducer.get('gettingNodes'),
+  addingNode: state.NodesReducer.get('addingNode'),
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({
+    getNodes,
+    addNode,
+  }, dispatch),
+});
+
+Nodes.propTypes = {
+  actions: PropTypes.shape({
+    getNodes: PropTypes.func.isRequired,
+    addNode: PropTypes.func.isRequired,
+  }).isRequired,
+  nodes: PropTypes.arrayOf(PropTypes.shape({})),
+  gettingNodes: PropTypes.bool,
+  addingNode: PropTypes.bool,
+};
+
+Nodes.defaultProps = {
+  nodes: [],
+  gettingNodes: false,
+  addingNode: false,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Nodes);

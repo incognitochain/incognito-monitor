@@ -1,10 +1,12 @@
 .navbar {
-  .logo {
-    height: 100%;
-    width: auto;
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-    img {
-      height: 100%;
-    }
+  button.bp3-button.bp3-large {
+    height: 50px;
+    font-weight: bold;
+    padding: 5px 10px;
   }
 }

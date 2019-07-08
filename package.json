@@ -12,6 +12,7 @@
   "dependencies": {
     "@babel/core": "7.4.3",
     "@blueprintjs/core": "^3.17.1",
+    "@blueprintjs/select": "^3.9.0",
     "@blueprintjs/table": "^3.6.0",
     "@svgr/webpack": "4.1.0",
     "@typescript-eslint/eslint-plugin": "1.6.0",
@@ -82,6 +83,7 @@
     "webpack": "4.29.6",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
+    "winston": "^3.2.1",
     "workbox-webpack-plugin": "4.2.0"
   },
   "scripts": {

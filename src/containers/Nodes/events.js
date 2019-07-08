@@ -1,0 +1,7 @@
+export const GET_NODES = 'GET_NODES';
+export const GET_NODES_SUCCESS = 'GET_NODES_SUCCESS';
+export const GET_NODES_FAILED = 'GET_NODES_FAILED';
+
+export const ADD_NODE = 'ADD_NODE';
+export const ADD_NODE_SUCCESS = 'ADD_NODE_SUCCESS';
+export const ADD_NODE_FAILED = 'ADD_NODE_FAILED';

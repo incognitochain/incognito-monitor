@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Card } from '@blueprintjs/core';
 import Graph from 'p2p-graph';
 
 import './index.scss';
@@ -60,9 +59,9 @@ class ConnectionPanel extends Component {
     }
 
     return (
-      <Card className="connection-panel">
+      <div className="connection-panel">
         <div className="graph" />
-      </Card>
+      </div>
     );
   }
 }

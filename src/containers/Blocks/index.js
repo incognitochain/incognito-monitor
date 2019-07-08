@@ -2,10 +2,14 @@ import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import {
-  Button, Card, Divider, InputGroup,
+  Button, Card, Divider, InputGroup, MenuItem,
 } from '@blueprintjs/core';
+import { Select } from '@blueprintjs/select';
 
 import Table from 'components/common/Table';
+
+import Node from './node';
+import TEST_NODES from '../Nodes/test_nodes.json';
 import './index.scss';
 
 function search(value) {
@@ -16,6 +20,10 @@ class Blocks extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      nodes: TEST_NODES,
+    };
+
     // Use debounce to only call search when user stop inputting
     this.search = _.debounce(search, 500);
   }
@@ -25,6 +33,25 @@ class Blocks extends Component {
 
     this.search(value);
   };
+
+  renderNodeSelector() {
+    const { nodes } = this.state;
+
+    return (
+      <Select
+        items={nodes}
+        itemRenderer={Node}
+        noResults={<MenuItem disabled text="No results." />}
+      >
+        <Button
+          minimal
+          text={nodes[0].name}
+          rightIcon="double-caret-vertical"
+          className="no-padding field-value"
+        />
+      </Select>
+    );
+  }
 
   render() {
     const blocks = [
@@ -47,8 +74,8 @@ class Blocks extends Component {
 
     const information = [
       {
-        title: 'Name',
-        value: 'Beacon 0',
+        title: 'Node',
+        value: this.renderNodeSelector(),
       }, {
         title: 'Host',
         value: '172.120.1.1',
@@ -86,10 +113,9 @@ class Blocks extends Component {
               placeholder="Search for block numbers"
               round
             />
-            <Button>Switch</Button>
           </div>
         </Card>
-        <Card>
+        <Card className="no-padding">
           <Table data={blocks} columns={columns} />
         </Card>
       </div>

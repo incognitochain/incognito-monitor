@@ -7,7 +7,7 @@ import NewNodeDialogFooter from './footer';
 import './index.scss';
 
 function NewNodeDialog({
-  isOpen, onClose, onAdd,
+  isOpen, onClose, onAdd, error,
 }) {
   const node = { id: '' };
 
@@ -26,7 +26,7 @@ function NewNodeDialog({
       canOutsideClickClose
       onClose={onClose}
       className="new-node-dialog"
-      body={<NewNodeDialogBody onChange={updateNode} />}
+      body={<NewNodeDialogBody onChange={updateNode} error={error} />}
       footer={<NewNodeDialogFooter onAdd={() => onAdd(node)} onCancel={onClose} />}
     />
   );
@@ -36,10 +36,12 @@ NewNodeDialog.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
+  error: PropTypes.string,
 };
 
 NewNodeDialog.defaultProps = {
   isOpen: false,
+  error: null,
 };
 
 export default React.memo(NewNodeDialog);

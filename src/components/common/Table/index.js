@@ -4,12 +4,15 @@ import { Column, Table as BluePrintTable, Cell } from '@blueprintjs/table';
 
 import './index.scss';
 
-function Table({ data, columns }) {
+function Table({ data, columns, loadingOptions }) {
   if (!data || !columns) {
     return null;
   }
 
   const cellRenderer = (rowIndex, colIndex) => {
+    if (loadingOptions) {
+      return <Cell />;
+    }
     const column = columns[colIndex];
     const value = data[rowIndex][column.key];
     const { formatter } = column;
@@ -19,7 +22,11 @@ function Table({ data, columns }) {
   };
 
   return (
-    <BluePrintTable numRows={data.length} className="incognito-table">
+    <BluePrintTable
+      numRows={loadingOptions ? 10 : data.length}
+      className="incognito-table"
+      loadingOptions={loadingOptions}
+    >
       {columns.map(({ key, displayName }) => (
         <Column
           key={key}
@@ -44,6 +51,11 @@ Table.propTypes = {
     formatter: PropTypes.func,
     className: PropTypes.string,
   })).isRequired,
+  loadingOptions: PropTypes.arrayOf(PropTypes.string),
+};
+
+Table.defaultProps = {
+  loadingOptions: undefined,
 };
 
 export default React.memo(Table);
