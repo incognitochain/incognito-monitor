@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 import Table from 'components/common/Table';
 
 import './index.scss';
@@ -11,17 +12,32 @@ import NewNodeDialog from 'components/NewNodeDialog';
 import { TableLoadingOption } from '@blueprintjs/table';
 
 function HealthPanel({
-  data, showNewNodeDialog, onToggleDialog, onAddNode, onImport, onExport, loading, newNodeError,
+  data,
+  showNewNodeDialog,
+  onToggleDialog,
+  onAddNode,
+  onImport,
+  onExport,
+  loading,
+  newNodeError,
+  onDelete,
 }) {
   const columns = [{
     key: 'name',
     displayName: 'Name',
+    formatter: value => (
+      <Link to={`/nodes/${value}`}>
+        {value}
+      </Link>
+    ),
   }, {
     key: 'host',
     displayName: 'Host',
+    editable: true,
   }, {
     key: 'port',
     displayName: 'Port',
+    editable: true,
   }, {
     key: 'type',
     displayName: 'Type',
@@ -36,6 +52,22 @@ function HealthPanel({
   }, {
     key: 'beaconHeight',
     displayName: 'Beacon Height',
+  }, {
+    key: 'epoch',
+    displayName: 'Epoch',
+  }, {
+    key: 'name',
+    displayName: '',
+    formatter: name => (
+      <Button
+        onClick={() => onDelete(name)}
+        minimal
+        icon="delete"
+        name={name}
+        className="btn-delete"
+      />
+    ),
+    width: 50,
   }];
 
   return (
@@ -73,6 +105,7 @@ HealthPanel.propTypes = {
   onAddNode: PropTypes.func.isRequired,
   onImport: PropTypes.func.isRequired,
   onExport: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   newNodeError: PropTypes.string,
 };

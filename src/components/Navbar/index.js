@@ -6,7 +6,7 @@ import {
   Alignment,
   Classes,
 } from '@blueprintjs/core';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import './index.scss';
 
@@ -14,12 +14,12 @@ function Navbar() {
   return (
     <BSNavBar className="navbar no-padding-left">
       <NavbarGroup align={Alignment.LEFT}>
-        <Link to="/">
-          <Button large className={Classes.MINIMAL} icon="layout-grid" text="Nodes" />
-        </Link>
-        <Link to="/blocks">
-          <Button large className={Classes.MINIMAL} icon="layout-grid" text="Blocks" />
-        </Link>
+        <NavLink to="/" isActive={(match, location) => location.pathname === '/'} activeClassName="is-active">
+          <Button large className={Classes.MINIMAL} icon="database" text="Nodes" />
+        </NavLink>
+        <NavLink to="/nodes/" activeClassName="is-active">
+          <Button large className={Classes.MINIMAL} icon="code-block" text="Chains" />
+        </NavLink>
       </NavbarGroup>
     </BSNavBar>
   );

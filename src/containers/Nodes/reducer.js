@@ -5,6 +5,9 @@ import {
   GET_NODES,
   GET_NODES_FAILED,
   GET_NODES_SUCCESS,
+  DELETE_NODE,
+  DELETE_NODE_FAILED,
+  DELETE_NODE_SUCCESS,
 } from 'containers/Nodes/events';
 import { Map } from 'immutable';
 
@@ -40,6 +43,21 @@ actions[ADD_NODE_SUCCESS] = (state, action) => {
 
 actions[ADD_NODE_FAILED] = state => state
   .set('addingNode', false);
+
+actions[DELETE_NODE] = state => state
+  .set('deletingNode', true);
+
+actions[DELETE_NODE_SUCCESS] = (state, action) => {
+  const deletedNodeName = action.payload;
+  const nodes = state.get('nodes');
+
+  return state
+    .set('deletingNode', false)
+    .set('nodes', nodes.filter(node => node.name !== deletedNodeName));
+};
+
+actions[DELETE_NODE_FAILED] = state => state
+  .set('deletingNode', false);
 
 export default function (state = initialState, action) {
   const fn = actions[action.type];

@@ -1,10 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Column, Table as BluePrintTable, Cell } from '@blueprintjs/table';
+import {
+  Column, Table as BluePrintTable, Cell, EditableCell, SelectionModes,
+} from '@blueprintjs/table';
 
 import './index.scss';
 
-function Table({ data, columns, loadingOptions }) {
+function Table({
+  data, columns, loadingOptions, skeletonHeight,
+}) {
   if (!data || !columns) {
     return null;
   }
@@ -18,14 +22,29 @@ function Table({ data, columns, loadingOptions }) {
     const { formatter } = column;
     const displayValue = formatter ? formatter(value) : value;
 
+    if (column.editable) {
+      return (
+        <EditableCell
+          className={column.cellWrapperClass}
+          value={displayValue}
+        >
+          {displayValue}
+        </EditableCell>
+      );
+    }
+
     return <Cell className={column.cellWrapperClass}>{displayValue}</Cell>;
   };
 
+  const columnWidths = columns.map(column => column.width || 150);
+
   return (
     <BluePrintTable
-      numRows={loadingOptions ? 10 : data.length}
+      numRows={loadingOptions ? skeletonHeight : data.length}
       className="incognito-table"
       loadingOptions={loadingOptions}
+      selectionModes={SelectionModes.NONE}
+      columnWidths={columnWidths}
     >
       {columns.map(({ key, displayName }) => (
         <Column
@@ -50,12 +69,15 @@ Table.propTypes = {
     displayName: PropTypes.string.isRequired,
     formatter: PropTypes.func,
     className: PropTypes.string,
+    editable: PropTypes.bool,
   })).isRequired,
   loadingOptions: PropTypes.arrayOf(PropTypes.string),
+  skeletonHeight: PropTypes.number,
 };
 
 Table.defaultProps = {
   loadingOptions: undefined,
+  skeletonHeight: 10,
 };
 
 export default React.memo(Table);

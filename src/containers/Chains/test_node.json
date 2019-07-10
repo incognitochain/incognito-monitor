@@ -1,0 +1,82 @@
+{
+  "host": "172.105.200.109",
+  "id": "",
+  "name": "Shard 1",
+  "port": "20005",
+  "status": "ONLINE",
+  "totalBlocks": 142016,
+  "beaconHeight": 185239,
+  "chains": [
+    {
+      "name": "Beacon",
+      "height": 185239,
+      "hash": "02d23f9fa4b0da63f828bc193d741c130ab022675da9a7ffad99aec16b82d7f1",
+      "epoch": 3705,
+      "index": -1
+    },
+    {
+      "name": "Shard 1",
+      "height": 142015,
+      "hash": "b6ef8f8cc68e78089582cd234e6b72552b0e349022a6c02d64dc55916ffe24f7",
+      "epoch": 3705,
+      "totalTxs": 28,
+      "index": 0
+    },
+    {
+      "name": "Shard 2",
+      "height": 1,
+      "hash": "17b3e46823fdd0eec584e68bfd1090369864731e2ed8dfac9293f892d54c1ecb",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 1
+    },
+    {
+      "name": "Shard 3",
+      "height": 1,
+      "hash": "092774f319e9fc9e38ba4f547ff785c6ad12fc5d14583522df60c64d0e86f78f",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 2
+    },
+    {
+      "name": "Shard 4",
+      "height": 1,
+      "hash": "f4b5b236b512e485e3cc4e32312f01d88a6dcb606dbe5612b6431821bf6574cb",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 3
+    },
+    {
+      "name": "Shard 5",
+      "height": 1,
+      "hash": "14e95b189cc30d41d441d78c0cccc4f11477acb34740960497b497b850344c0c",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 4
+    },
+    {
+      "name": "Shard 6",
+      "height": 1,
+      "hash": "1470797faf1944af6f6c2513d9a5665e37ff1e75b2e61ee77aa7a8e9f81bd3f4",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 5
+    },
+    {
+      "name": "Shard 7",
+      "height": 1,
+      "hash": "1d5fa779077eb37a9a732d76e6c4aeb69a8dd7eb206b62bd6c3c292674031539",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 6
+    },
+    {
+      "name": "Shard 8",
+      "height": 1,
+      "hash": "c8bccb347d76ab7b80e87033dbb52c1c382ce4fb8a9554557bbebaf5408c44a8",
+      "epoch": 1,
+      "totalTxs": 1,
+      "index": 7
+    }
+  ]
+}

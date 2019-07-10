@@ -1,0 +1,24 @@
+.information {
+  display: flex;
+  padding: 0;
+
+  > .information-field {
+    padding: 10px;
+
+    .field-title {
+      font-size: 12px;
+      font-weight: 300;
+      text-transform: uppercase;
+    }
+
+    .field-value {
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 30px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+}

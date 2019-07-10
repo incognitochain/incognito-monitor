@@ -1,0 +1,3 @@
+export const GET_BLOCK = 'GET_BLOCK';
+export const GET_BLOCK_SUCCESS = 'GET_BLOCK_SUCCESS';
+export const GET_BLOCK_FAILED = 'GET_BLOCK_FAILED';

@@ -19,3 +19,21 @@ code {
 .error-msg {
   color: #db3737;
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.flex {
+  display: flex;
+}
+
+.center-spinner {
+  height: 100vh;
+}

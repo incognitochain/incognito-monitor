@@ -1,11 +1,10 @@
-const GET_NODES = 'get-nodes';
-const ADD_NODE = 'add-node';
-const IMPORT_NODES = 'import-nodes';
-const EXPORT_NODES = 'export-nodes';
-
 module.exports =  {
-  GET_NODES,
-  ADD_NODE,
-  IMPORT_NODES,
-  EXPORT_NODES,
+  GET_NODES: 'get-nodes',
+  ADD_NODE: 'add-node',
+  DELETE_NODE: 'delete-node',
+  IMPORT_NODES: 'import-nodes',
+  EXPORT_NODES: 'export-nodes',
+  GET_CHAINS: 'get-chains',
+  GET_BLOCKS: 'get-blocks',
+  GET_BLOCK: 'get-block',
 };

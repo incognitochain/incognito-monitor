@@ -9,4 +9,10 @@
     font-weight: bold;
     padding: 5px 10px;
   }
+
+  .is-active,
+  .is-active button.bp3-button:hover,
+  .is-active button {
+    color: #48aff0;
+  }
 }

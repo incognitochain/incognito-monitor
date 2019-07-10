@@ -1,0 +1,3 @@
+export const GET_CHAIN = 'GET_CHAIN';
+export const GET_CHAIN_SUCCESS = 'GET_CHAIN_SUCCESS';
+export const GET_CHAIN_FAILED = 'GET_CHAIN_FAILED';

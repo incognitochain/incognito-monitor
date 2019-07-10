@@ -5,6 +5,9 @@ import {
   GET_NODES,
   GET_NODES_FAILED,
   GET_NODES_SUCCESS,
+  DELETE_NODE,
+  DELETE_NODE_FAILED,
+  DELETE_NODE_SUCCESS,
 } from 'containers/Nodes/events';
 import electron from 'utils/electron';
 
@@ -45,6 +48,26 @@ export const addNode = node => (dispatch) => {
     .catch((error) => {
       dispatch({
         type: ADD_NODE_FAILED,
+        error,
+      });
+    });
+};
+
+export const deleteNode = node => (dispatch) => {
+  dispatch({
+    type: DELETE_NODE,
+  });
+
+  electron.send('delete-node', node, {})
+    .then((payload) => {
+      dispatch({
+        type: DELETE_NODE_SUCCESS,
+        payload,
+      });
+    })
+    .catch((error) => {
+      dispatch({
+        type: DELETE_NODE_FAILED,
         error,
       });
     });
