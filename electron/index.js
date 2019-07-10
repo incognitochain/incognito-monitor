@@ -27,13 +27,15 @@ async function nodeWithStatus(node) {
   let status = 'OFFLINE';
   let totalBlocks;
   let beaconHeight;
+  let totalShards;
   try {
     await rpc.GetNetworkInfo();
     const beaconInfo = await rpc.GetBeaconBestState();
 
+    totalShards = beaconInfo.ActiveShards;
     totalBlocks = await rpc.GetBlockCount(-1);
 
-    for (let i = 0; i < beaconInfo.ActiveShards; i++) {
+    for (let i = 0; i < totalShards; i++) {
       totalBlocks += await rpc.GetBlockCount(i);
     }
 
@@ -49,6 +51,7 @@ async function nodeWithStatus(node) {
     status,
     totalBlocks,
     beaconHeight,
+    totalShards,
   };
 }
 
