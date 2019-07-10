@@ -23,10 +23,19 @@ class App extends Component {
     actions.getNodes();
   }
 
-  render() {
-    const { gettingNodes } = this.props;
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { location: prevLocation } = prevProps;
+    const { location: currentLocation, actions } = this.props;
 
-    if (gettingNodes) {
+    if (prevLocation.pathname !== '/' && currentLocation.pathname === '/') {
+      actions.getNodes();
+    }
+  }
+
+  render() {
+    const { gettingNodes, location } = this.props;
+
+    if (gettingNodes && location.pathname !== '/') {
       return <Spinner className="center-spinner" />;
     }
 
@@ -49,6 +58,7 @@ App.propTypes = {
     getNodes: PropTypes.func,
   }).isRequired,
   gettingNodes: PropTypes.bool.isRequired,
+  location: PropTypes.shape({}).isRequired,
 };
 
 const mapStateToProps = state => ({

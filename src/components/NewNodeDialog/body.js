@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { InputGroup, FormGroup } from '@blueprintjs/core';
 
-function NewNodeDialogBody({ onChange, error }) {
+function NewNodeDialogBody({ onChange, error, disabled }) {
   return (
     <div className="new-node-dialog-body">
       <FormGroup
@@ -10,21 +10,21 @@ function NewNodeDialogBody({ onChange, error }) {
         labelFor="name"
         inline
       >
-        <InputGroup id="name" onChange={onChange} />
+        <InputGroup disabled={disabled} id="name" onChange={onChange} />
       </FormGroup>
       <FormGroup
         label="Host"
         labelFor="host"
         inline
       >
-        <InputGroup id="host" onChange={onChange} />
+        <InputGroup disabled={disabled} id="host" onChange={onChange} />
       </FormGroup>
       <FormGroup
         label="Port"
         labelFor="port"
         inline
       >
-        <InputGroup id="port" onChange={onChange} />
+        <InputGroup disabled={disabled} id="port" onChange={onChange} />
       </FormGroup>
       <div className="error-msg">{error}</div>
     </div>
@@ -34,10 +34,12 @@ function NewNodeDialogBody({ onChange, error }) {
 NewNodeDialogBody.propTypes = {
   onChange: PropTypes.func.isRequired,
   error: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 NewNodeDialogBody.defaultProps = {
   error: null,
+  disabled: false,
 };
 
 export default React.memo(NewNodeDialogBody);

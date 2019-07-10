@@ -80,6 +80,7 @@ function HealthPanel({
         </ButtonGroup>
       </div>
       <NewNodeDialog
+        disabled={loading}
         isOpen={showNewNodeDialog}
         canOutsideClickClose
         onClose={onToggleDialog}
