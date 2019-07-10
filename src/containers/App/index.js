@@ -34,7 +34,7 @@ class App extends Component {
       <div className="App">
         <Navbar />
         <div className="app-content">
-          <Route exact path="/" component={Nodes} />
+          <Route exact path="/(.*index.html)?" component={Nodes} />
           <Route exact path="/nodes/:name([a-zA-Z0-9 _-]*)/" component={Chains} />
           <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/chains/:chainIndex" component={Blocks} />
           <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/blocks/:blockHash" component={Block} />

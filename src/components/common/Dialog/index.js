@@ -7,7 +7,7 @@ function Dialog({
 }) {
   return (
     <BluePrintDialog
-      className={`${className} bp3-dark`}
+      className={`${className}`}
       onClose={onClose}
       title={title}
       canOutsideClickClose={canOutsideClickClose}

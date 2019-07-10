@@ -181,17 +181,19 @@ class Chains extends Component {
           fields={fields}
           rightPart={this.renderSearch()}
         />
-        <Card className="no-padding">
-          <Table
-            data={chains}
-            columns={columns}
-            skeletonHeight={10}
-            loadingOptions={gettingChains ? [
-              TableLoadingOption.CELLS,
-              TableLoadingOption.ROW_HEADERS,
-            ] : undefined}
-          />
-        </Card>
+        { !_.isEmpty(chains) && (
+          <Card className="no-padding">
+            <Table
+              data={chains}
+              columns={columns}
+              skeletonHeight={10}
+              loadingOptions={gettingChains ? [
+                TableLoadingOption.CELLS,
+                TableLoadingOption.ROW_HEADERS,
+              ] : undefined}
+            />
+          </Card>
+        ) }
       </div>
     );
   }

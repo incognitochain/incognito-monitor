@@ -86,14 +86,16 @@ function HealthPanel({
         onAdd={onAddNode}
         error={newNodeError}
       />
-      <Table
-        data={data}
-        columns={columns}
-        loadingOptions={loading ? [
-          TableLoadingOption.CELLS,
-          TableLoadingOption.ROW_HEADERS,
-        ] : undefined}
-      />
+      { !_.isEmpty(data) && (
+        <Table
+          data={data}
+          columns={columns}
+          loadingOptions={loading ? [
+            TableLoadingOption.CELLS,
+            TableLoadingOption.ROW_HEADERS,
+          ] : undefined}
+        />
+      ) }
     </div>
   );
 }

@@ -5,3 +5,5 @@
 /config
 serviceWorker.js
 /electron
+/dist/**
+/.idea

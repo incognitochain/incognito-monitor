@@ -1,12 +1,29 @@
 {
   "name": "incognito-monitor",
+  "author": {
+    "name" : "Incognito",
+    "email": "incognito@autonomous.nyc"
+  },
   "version": "0.1.0",
   "private": true,
+  "main": "./electron/index.js",
   "build": {
     "appId": "incognito.monitoor",
     "mac": {
-      "category": "incognito"
-    }
+      "category": "incognito",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "files": [
+      "build/**/*",
+      "data.sample",
+      "electron/**/*"
+    ]
   },
   "homepage": "./",
   "dependencies": {
@@ -24,12 +41,12 @@
     "babel-preset-react-app": "^9.0.0",
     "camelcase": "^5.2.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "cross-env": "^5.2.0",
     "css-loader": "2.1.1",
     "d3": "^5.9.7",
     "dotenv": "6.2.0",
     "dotenv-expand": "4.2.0",
-    "electron": "^5.0.6",
-    "electron-builder": "^20.44.4",
+    "electron-is-dev": "^1.1.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-react-app": "^4.0.1",
@@ -81,17 +98,21 @@
     "ts-pnp": "1.1.2",
     "url-loader": "1.1.2",
     "webpack": "4.29.6",
+    "webpack-cli": "^3.3.5",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
     "winston": "^3.2.1",
     "workbox-webpack-plugin": "4.2.0"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "start-react": "node scripts/start.js",
+    "build-react": "node scripts/build.js",
     "test": "node scripts/test.js",
     "electron": "electron ./electron",
-    "pack": "electron-builder --dir"
+    "package": "rm -rf dist/ && electron-builder -mwl",
+    "release": "yarn build-react && electron-builder --publish=always",
+    "build": "yarn build-react && yarn package",
+    "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {
     "production": [
@@ -158,5 +179,11 @@
     "presets": [
       "react-app"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.1",
+    "electron": "^5.0.6",
+    "electron-builder": "^20.44.4",
+    "wait-on": "^3.2.0"
   }
 }

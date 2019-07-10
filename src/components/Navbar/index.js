@@ -14,7 +14,12 @@ function Navbar() {
   return (
     <BSNavBar className="navbar no-padding-left">
       <NavbarGroup align={Alignment.LEFT}>
-        <NavLink to="/" isActive={(match, location) => location.pathname === '/'} activeClassName="is-active">
+        <NavLink
+          to="/"
+          isActive={(match, location) => location.pathname === '/'
+            || location.pathname.indexOf('index.html') > -1}
+          activeClassName="is-active"
+        >
           <Button large className={Classes.MINIMAL} icon="database" text="Nodes" />
         </NavLink>
         <NavLink to="/nodes/" activeClassName="is-active">

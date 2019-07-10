@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -84,17 +85,19 @@ class Chain extends Component {
     return (
       <div className="chain">
         <Information fields={fields} className={gettingChain ? 'bp3-skeleton' : ''} />
-        <Card className="no-padding">
-          <Table
-            data={blocks}
-            columns={columns}
-            skeletonHeight={10}
-            loadingOptions={gettingChain ? [
-              TableLoadingOption.CELLS,
-              TableLoadingOption.ROW_HEADERS,
-            ] : undefined}
-          />
-        </Card>
+        { !_.isEmpty(blocks) && (
+          <Card className="no-padding">
+            <Table
+              data={blocks}
+              columns={columns}
+              skeletonHeight={10}
+              loadingOptions={gettingChain ? [
+                TableLoadingOption.CELLS,
+                TableLoadingOption.ROW_HEADERS,
+              ] : undefined}
+            />
+          </Card>
+        ) }
       </div>
     );
   }

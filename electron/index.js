@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
+const isDev = require('electron-is-dev');
 const ConstantRPC = require('./incognitoRpc');
 const {
   ADD_NODE, EXPORT_NODES, GET_NODES, IMPORT_NODES, GET_CHAINS, GET_BLOCKS, GET_BLOCK, DELETE_NODE,
@@ -10,9 +11,11 @@ const logger = require('./logger');
 const MOCK_UP_EVENT = {
   reply: _.noop,
 };
-
-const dataPath = path.join(__dirname, '../data');
+const homedir = require('os').homedir();
+const dataPath = path.join(homedir, 'incognito-data');
 const sampleDataPath = path.join(__dirname, '../data.sample');
+let mainWindow;
+let willQuitApp = false;
 
 function readNodes() {
   const nodesInString = fs.readFileSync(dataPath) || '[]';
@@ -112,38 +115,44 @@ function importNodes(event) {
 async function getChains(event, nodeName) {
   logger.verbose('Getting chains of ' + nodeName);
 
-  const nodes = readNodes();
-  const node = nodes.find(item => item.name === nodeName);
-  const rpc = new ConstantRPC(node.host, node.port);
-  const beaconInfo = await rpc.GetBeaconBestState();
-  const chains = [];
+  try {
 
-  chains.push({
-    name: 'Beacon',
-    height: beaconInfo.BeaconHeight,
-    hash: beaconInfo.BestBlockHash,
-    epoch: beaconInfo.Epoch,
-    index: -1,
-  });
+    const nodes = readNodes();
+    const node = nodes.find(item => item.name === nodeName);
+    const rpc = new ConstantRPC(node.host, node.port);
+    const beaconInfo = await rpc.GetBeaconBestState();
+    const chains = [];
 
-  await Promise.all(
-    _.range(0, beaconInfo.ActiveShards).map(async shardIndex => {
-      const shard = await rpc.GetShardBestState(shardIndex);
-      chains.push({
-        name: `Shard ${shardIndex + 1}`,
-        height: shard.ShardHeight,
-        hash: shard.BestBlockHash,
-        epoch: shard.Epoch,
-        totalTxs: shard.TotalTxns,
-        index: shardIndex,
-      })
-    }));
+    chains.push({
+      name: 'Beacon',
+      height: beaconInfo.BeaconHeight,
+      hash: beaconInfo.BestBlockHash,
+      epoch: beaconInfo.Epoch,
+      index: -1,
+    });
 
-  const nodeInfo = await nodeWithStatus(node);
-  nodeInfo.chains = _.orderBy(chains, 'index');
+    await Promise.all(
+      _.range(0, beaconInfo.ActiveShards).map(async shardIndex => {
+        const shard = await rpc.GetShardBestState(shardIndex);
+        chains.push({
+          name: `Shard ${shardIndex + 1}`,
+          height: shard.ShardHeight,
+          hash: shard.BestBlockHash,
+          epoch: shard.Epoch,
+          totalTxs: shard.TotalTxns,
+          index: shardIndex,
+        })
+      }));
 
-  event.reply(GET_CHAINS, nodeInfo);
-  logger.verbose('Get chains success ' + JSON.stringify(nodeInfo, null, 4));
+    const nodeInfo = await nodeWithStatus(node);
+    nodeInfo.chains = _.orderBy(chains, 'index');
+
+    event.reply(GET_CHAINS, nodeInfo);
+    logger.verbose('Get chains success ' + JSON.stringify(nodeInfo, null, 4));
+  } catch (error) {
+    event.reply(GET_CHAINS, { chains: [], name: nodeName });
+    logger.error(error.message);
+  }
 }
 
 async function getBlocks(event, {nodeName, shardId}) {
@@ -226,10 +235,12 @@ ipcMain.on(GET_CHAINS, getChains);
 ipcMain.on(GET_BLOCKS, getBlocks);
 ipcMain.on(GET_BLOCK, getBlock);
 
-function start() {
-  const mainWindow = new BrowserWindow({
+function createWindow() {
+  mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
+    minWidth: 800,
+    minHeight: 600,
     autoHideMenuBar: true,
     useContentSize: true,
     resizable: true,
@@ -237,8 +248,29 @@ function start() {
       nodeIntegration: true,
     },
   });
-  mainWindow.loadURL('http://localhost:3000');
+  mainWindow.loadURL(isDev
+    ? "http://localhost:3000"
+    : `file://${path.join(__dirname, "../build/index.html")}`
+  );
   mainWindow.focus();
+
+  mainWindow.on('close', (e) => {
+    if (willQuitApp) {
+      /* the user tried to quit the app */
+      mainWindow = null;
+    } else {
+      /* the user only tried to close the window */
+      e.preventDefault();
+      mainWindow.hide();
+    }
+  });
 }
 
-app.on('ready', start);
+app.on('ready', createWindow);
+
+/* 'activate' is emitted when the user clicks the Dock icon (OS X) */
+app.on('activate', () => mainWindow.show());
+
+/* 'before-quit' is emitted when Electron receives
+ * the signal to exit and wants to start closing windows */
+app.on('before-quit', () => willQuitApp = true);
