@@ -44,6 +44,11 @@ class Chain extends Component {
       }, {
         key: 'hash',
         displayName: 'Hash',
+        formatter: value => (
+          <Link to={`/nodes/${this.nodeName}/blocks/${value}`}>
+            {value}
+          </Link>
+        ),
       }, {
         key: 'producer',
         displayName: 'Producer',

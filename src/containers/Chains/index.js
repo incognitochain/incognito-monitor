@@ -143,6 +143,11 @@ class Chains extends Component {
       }, {
         key: 'hash',
         displayName: 'Block hash',
+        formatter: value => (
+          <Link to={`/nodes/${node.name}/blocks/${value}`}>
+            {value}
+          </Link>
+        ),
       }, {
         key: 'height',
         displayName: 'Height',
