@@ -29,7 +29,13 @@ async function nodeWithStatus(node) {
   let beaconHeight;
   try {
     await rpc.GetNetworkInfo();
-    totalBlocks = await rpc.GetBlockCount(0);
+    const beaconInfo = await rpc.GetBeaconBestState();
+
+    totalBlocks = await rpc.GetBlockCount(-1);
+
+    for (let i = 0; i < beaconInfo.ActiveShards; i++) {
+      totalBlocks += await rpc.GetBlockCount(i);
+    }
 
     const state = await rpc.GetBeaconBestState();
     beaconHeight = state.BeaconHeight;
