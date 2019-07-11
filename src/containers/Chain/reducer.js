@@ -12,8 +12,8 @@ const initialState = new Map({
 
 const actions = {};
 
-actions[GET_CHAIN] = state => state
-  .set('gettingChain', true);
+actions[GET_CHAIN] = (state, action) => state
+  .set('gettingChain', !action.background);
 
 actions[GET_CHAIN_SUCCESS] = (state, action) => state
   .set('gettingChain', false)

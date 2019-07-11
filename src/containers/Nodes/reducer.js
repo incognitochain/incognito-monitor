@@ -19,8 +19,8 @@ const initialState = new Map({
 
 const actions = {};
 
-actions[GET_NODES] = state => state
-  .set('gettingNodes', true);
+actions[GET_NODES] = (state, action) => state
+  .set('gettingNodes', !action.background);
 
 actions[GET_NODES_SUCCESS] = (state, action) => state
   .set('gettingNodes', false)

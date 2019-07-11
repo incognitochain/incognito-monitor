@@ -17,9 +17,21 @@ class Block extends Component {
     const {
       match, actions,
     } = this.props;
-    this.blockIndex = match.params.blockIndex;
+    this.blockHash = match.params.blockHash;
     this.nodeName = match.params.nodeName;
-    actions.getBlock(this.nodeName, this.blockIndex);
+    actions.getBlock(this.nodeName, this.blockHash);
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { match: prevMatch } = prevProps;
+    const { match, actions } = this.props;
+    const prevBlockHash = prevMatch.params.blockHash;
+    const currentBlockHash = match.params.blockHash;
+
+    if (prevBlockHash !== currentBlockHash) {
+      this.blockHash = currentBlockHash;
+      actions.getBlock(this.nodeName, currentBlockHash);
+    }
   }
 
   onBack = () => {
@@ -35,7 +47,26 @@ class Block extends Component {
     }
 
     const {
-      name, producer, totalBlocks,
+      hash,
+      height,
+      version,
+      confirmations,
+      time,
+      txRoot,
+      r,
+      round,
+      epoch,
+      crossShards,
+      previousBlockHash,
+      nextBlockHash,
+      producer,
+      producerSign,
+      aggregatedSig,
+      beaconHeight,
+      beaconBlockHash,
+      txs,
+      fee,
+      reward,
     } = block;
 
     const fields = [
@@ -47,19 +78,10 @@ class Block extends Component {
   </Button>,
       }, {
         title: 'Block',
-        value: name,
-      }, {
-        title: 'Current Block Producer',
-        value: producer,
-      }, {
-        title: 'Total Blocks',
-        value: totalBlocks,
+        value: hash,
+        maxWidth: 700,
       },
     ];
-
-    const {
-      height, version, confirmations, time,
-    } = block;
 
     const blockFields = [
       {
@@ -74,17 +96,68 @@ class Block extends Component {
       }, {
         title: 'Time',
         value: time,
+      }, {
+        title: 'Merkle TxS Root',
+        value: txRoot,
+      }, {
+        title: 'R',
+        value: r,
+      }, {
+        title: 'Round',
+        value: round,
+      }, {
+        title: 'Epoch',
+        value: epoch,
+      }, {
+        title: 'Crosses Shards',
+        value: crossShards,
+      }, {
+        title: 'Previous block',
+        value:
+  <Link to={`/nodes/${this.nodeName}/blocks/${previousBlockHash}`}>
+    {previousBlockHash}
+  </Link>,
+      }, {
+        title: 'Next block',
+        value:
+  <Link to={`/nodes/${this.nodeName}/blocks/${nextBlockHash}`}>
+    {nextBlockHash}
+  </Link>,
+      }, {
+        title: 'Block producer',
+        value: producer,
+      }, {
+        title: 'Block producer signature',
+        value: producerSign,
+      }, {
+        title: 'Aggregated signature',
+        value: aggregatedSig,
+      }, {
+        title: 'Beacon height',
+        value: beaconHeight,
+      }, {
+        title: 'Beacon block hash',
+        value: beaconBlockHash,
+      }, {
+        title: 'Fee',
+        value: fee,
+      }, {
+        title: 'Reward',
+        value: reward,
+      }, {
+        title: 'TXs',
+        value: txs || 0,
       },
     ];
 
     return (
       <div className="block">
         <Information fields={fields} className={gettingBlock ? 'bp3-skeleton' : ''} />
-        <Card className="no-padding">
+        <Card className={`no-padding ${gettingBlock ? 'bp3-skeleton' : ''}`}>
           {blockFields.map(field => (
-            <div className="flex">
-              <Card>{field.title}</Card>
-              <Card>{field.value}</Card>
+            <div key={field.title} className="flex cards">
+              <Card className="title">{field.title}</Card>
+              <Card className="value text-overflow">{field.value}</Card>
             </div>
           ))}
         </Card>
@@ -98,7 +171,7 @@ Block.propTypes = {
     getBlock: PropTypes.func.isRequired,
   }).isRequired,
   match: PropTypes.shape({}).isRequired,
-  block: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  block: PropTypes.shape({}).isRequired,
   gettingBlock: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     goBack: PropTypes.func.isRequired,

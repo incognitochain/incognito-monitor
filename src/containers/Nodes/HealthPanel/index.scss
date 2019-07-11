@@ -11,17 +11,21 @@
   .status {
     &-offline {
       background-color: #db3737;
-      color: white;
     }
 
     &-online {
       background-color: #0f9960;
-      color: white;
     }
 
     &-offline,
-    &-online {
+    &-online,
+    &-timeout {
       padding: 0 10px;
+      color: white;
+    }
+
+    &-timeout {
+      background-color: #d9822b;
     }
   }
 

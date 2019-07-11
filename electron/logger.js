@@ -1,8 +1,17 @@
 const winston = require('winston');
+const LOG_FOLDER_PATH = '~/incognito-logs';
 
 const logger = winston.createLogger({
   level: 'verbose',
   format: winston.format.json(),
+  transports: [
+    //
+    // - Write to all logs with level `info` and below to `combined.log`
+    // - Write all logs error (and below) to `error.log`.
+    //
+    new winston.transports.File({ filename: `${LOG_FOLDER_PATH}/error.log`, level: 'error' }),
+    new winston.transports.File({ filename: `${LOG_FOLDER_PATH}/combined.log` })
+  ]
 });
 
 //

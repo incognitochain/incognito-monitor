@@ -98,6 +98,14 @@ class ConstantNodeRPC {
    */
   RetrieveBlock(blockHash = '', verbosity = '1') {}
 
+
+  /**
+   * blockHash - string
+   * eg: "916654c01e09828a3cbb17d8b58fb02ce975e84f7a2a8d207a343bba33589f56"
+   * verbosity - string
+   */
+  RetrieveBeaconBlock(blockHash = '', verbosity = '1') {}
+
   /**
    *
    * privateKey - string, eg : "112t8rqGc71CqjrDCuReGkphJ4uWHJmiaV7rVczqNhc33pzChmJRvikZNc3Dt5V7quhdzjWW9Z4BrB2BxdK5VtHzsG9JZdZ5M7yYYGidKKZV"

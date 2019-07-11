@@ -6,9 +6,10 @@ import {
 } from './events';
 import TEST_NODE from './test_node.json';
 
-export const getChains = nodeName => (dispatch) => {
+export const getChains = (nodeName, background = false) => (dispatch) => {
   dispatch({
     type: GET_CHAINS,
+    background,
   });
 
   electron.send('get-chains', nodeName, TEST_NODE)

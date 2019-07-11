@@ -3,41 +3,31 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {
-  Button, Card, InputGroup, MenuItem,
-} from '@blueprintjs/core';
+import { Button, Card, MenuItem } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/select';
-import { TableLoadingOption } from '@blueprintjs/table';
 import { Link } from 'react-router-dom';
 
 import Table from 'components/common/Table';
 import Information from 'components/Information';
+import refreshOnInterval from 'components/HOC/refreshOnInterval';
+import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
 import { getChains } from './actions';
 import Node from './node';
 import './index.scss';
 
-function search(value) {
-  console.debug(value);
-}
-
 const MOCK_UP_NODE = {
-  name: 'Test',
-  host: '127.0.0.1',
-  port: 9000,
-  status: 'Online',
+  name: '',
+  host: '',
+  port: '',
+  status: '',
   chains: [{}, {}, {}, {}, {}, {}, {}, {}, {}],
 };
 
 class Chains extends Component {
-  constructor(props) {
-    super(props);
-
-    // Use debounce to only call search when user stop inputting
-    this.search = _.debounce(search, 500);
-  }
-
   componentDidMount() {
     this.getNode();
+    const { setRefreshAction, actions } = this.props;
+    setRefreshAction(() => actions.getChains(this.nodeName, true));
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -46,17 +36,10 @@ class Chains extends Component {
     const prevNodeName = prevMatch.params.name || _.get(prevNode, 'name');
     const currentNodeName = match.params.name || _.get(node, 'name');
 
-    console.debug(prevNodeName, currentNodeName);
     if (prevNodeName !== currentNodeName) {
       this.getNode();
     }
   }
-
-  onSearchInputChange = (e) => {
-    const { value } = e.target;
-
-    this.search(value);
-  };
 
   onNodeChange = (newNode) => {
     const { history } = this.props;
@@ -76,30 +59,12 @@ class Chains extends Component {
     if (nodeName !== _.get(node, 'name')) {
       actions.getChains(nodeName);
     }
-  }
 
-  // eslint-disable-next-line class-methods-use-this
-  renderSearch() {
-    return null;
-
-    // return (
-    //   <div className="node-actions">
-    //     <InputGroup
-    //       className="search-wrapper"
-    //       onChange={this.onSearchInputChange}
-    //       placeholder="Search for block numbers"
-    //       round
-    //     />
-    //   </div>
-    // );
+    this.nodeName = nodeName;
   }
 
   renderNodeSelector() {
     const { nodes, node } = this.props;
-
-    if (_.isEmpty(node)) {
-      return <div className="field-value">{MOCK_UP_NODE.name}</div>;
-    }
 
     return (
       <Select
@@ -111,7 +76,7 @@ class Chains extends Component {
       >
         <Button
           minimal
-          text={node.name}
+          text={_.get(node, 'name')}
           rightIcon="double-caret-vertical"
           className="no-padding field-value"
         />
@@ -126,10 +91,6 @@ class Chains extends Component {
     if (gettingChains) {
       node = MOCK_UP_NODE;
     }
-
-    const {
-      chains, host, port, totalBlocks, status,
-    } = node;
 
     const columns = [
       {
@@ -166,16 +127,16 @@ class Chains extends Component {
         value: this.renderNodeSelector(),
       }, {
         title: 'Host',
-        value: host,
+        value: node.host,
       }, {
         title: 'Port',
-        value: port,
+        value: node.port,
       }, {
         title: 'Total blocks',
-        value: totalBlocks,
+        value: node.totalBlocks,
       }, {
         title: 'Status',
-        value: status,
+        value: node.status,
       },
     ];
 
@@ -184,18 +145,14 @@ class Chains extends Component {
         <Information
           className={gettingChains ? 'bp3-skeleton' : ''}
           fields={fields}
-          rightPart={this.renderSearch()}
         />
-        { !_.isEmpty(chains) && (
+        { !_.isEmpty(node.chains) && (
           <Card className="no-padding">
             <Table
-              data={chains}
+              data={node.chains}
               columns={columns}
               skeletonHeight={10}
-              loadingOptions={gettingChains ? [
-                TableLoadingOption.CELLS,
-                TableLoadingOption.ROW_HEADERS,
-              ] : undefined}
+              loading={gettingChains}
             />
           </Card>
         ) }
@@ -224,6 +181,7 @@ Chains.propTypes = {
   }).isRequired,
   gettingChains: PropTypes.bool.isRequired,
   history: PropTypes.shape({}).isRequired,
+  setRefreshAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -238,4 +196,6 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chains);
+const wrappedChains = consumeRefreshContext(refreshOnInterval(Chains));
+
+export default connect(mapStateToProps, mapDispatchToProps)(wrappedChains);

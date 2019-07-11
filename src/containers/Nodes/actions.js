@@ -13,12 +13,13 @@ import electron from 'utils/electron';
 
 import TEST_NODES from './test_nodes.json';
 
-export const getNodes = nodes => (dispatch) => {
+export const getNodes = (background = false) => (dispatch) => {
   dispatch({
     type: GET_NODES,
+    background,
   });
 
-  electron.send('get-nodes', nodes, TEST_NODES)
+  electron.send('get-nodes', null, TEST_NODES)
     .then((payload) => {
       dispatch({
         type: GET_NODES_SUCCESS,

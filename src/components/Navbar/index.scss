@@ -15,4 +15,14 @@
   .is-active button {
     color: #48aff0;
   }
+
+  .refresh-time-input {
+    flex-direction: row;
+    margin-bottom: 0;
+
+    label {
+      margin: 0 10px;
+      line-height: 30px;
+    }
+  }
 }

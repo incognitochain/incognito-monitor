@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route } from 'react-router-dom';
@@ -10,6 +11,7 @@ import Nodes from 'containers/Nodes';
 import Chains from 'containers/Chains';
 import Blocks from 'containers/Chain';
 import Block from 'containers/Block';
+import RefreshContext from 'components/Contexts/RefreshContext';
 import { getNodes } from 'containers/Nodes/actions';
 
 import './index.scss';
@@ -18,9 +20,16 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      autoRefresh: true,
+      refreshTime: 5000,
+    };
+
     const { actions } = props;
 
     actions.getNodes();
+
+    this.changeRefreshTime = _.debounce(this.changeRefreshTime, 500);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -32,8 +41,24 @@ class App extends Component {
     }
   }
 
+  onToggleAutoRefresh = () => {
+    const { autoRefresh } = this.state;
+    this.setState({ autoRefresh: !autoRefresh });
+  };
+
+  onChangeRefreshTime = (e) => {
+    this.changeRefreshTime(e.target.value);
+  };
+
+  changeRefreshTime(newTime) {
+    this.setState({
+      refreshTime: newTime,
+    });
+  }
+
   render() {
     const { gettingNodes, location } = this.props;
+    const { autoRefresh, refreshTime } = this.state;
 
     if (gettingNodes && location.pathname !== '/') {
       return <Spinner className="center-spinner" />;
@@ -41,13 +66,24 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Navbar />
-        <div className="app-content">
-          <Route exact path="/(.*index.html)?" component={Nodes} />
-          <Route exact path="/nodes/:name([a-zA-Z0-9 _-]*)/" component={Chains} />
-          <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/chains/:chainIndex" component={Blocks} />
-          <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/blocks/:blockHash" component={Block} />
-        </div>
+        <RefreshContext.Provider value={{
+          autoRefresh,
+          refreshTime,
+        }}
+        >
+          <Navbar
+            onToggleAutoRefresh={this.onToggleAutoRefresh}
+            autoRefresh={autoRefresh}
+            refreshTime={refreshTime}
+            onChangeRefreshTime={this.onChangeRefreshTime}
+          />
+          <div className="app-content">
+            <Route exact path="/(.*index.html)?" component={Nodes} />
+            <Route exact path="/nodes/:name([a-zA-Z0-9 _-]*)/" component={Chains} />
+            <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/chains/:chainIndex" component={Blocks} />
+            <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/blocks/:blockHash" component={Block} />
+          </div>
+        </RefreshContext.Provider>
       </div>
     );
   }

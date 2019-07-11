@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import Table from 'components/common/Table';
-
-import './index.scss';
 import {
   Alignment, Button, ButtonGroup,
 } from '@blueprintjs/core';
+
+import Table from 'components/common/Table';
 import NewNodeDialog from 'components/NewNodeDialog';
-import { TableLoadingOption } from '@blueprintjs/table';
+
+import './index.scss';
 
 function HealthPanel({
   data,
@@ -34,13 +34,16 @@ function HealthPanel({
     key: 'host',
     displayName: 'Host',
     editable: true,
+    width: 200,
   }, {
     key: 'port',
     displayName: 'Port',
     editable: true,
+    width: 80,
   }, {
     key: 'type',
     displayName: 'Type',
+    width: 80,
   }, {
     key: 'status',
     displayName: 'Status',
@@ -55,6 +58,7 @@ function HealthPanel({
   }, {
     key: 'epoch',
     displayName: 'Epoch',
+    width: 80,
   }, {
     key: 'name',
     displayName: '',
@@ -91,10 +95,7 @@ function HealthPanel({
         <Table
           data={data}
           columns={columns}
-          loadingOptions={loading ? [
-            TableLoadingOption.CELLS,
-            TableLoadingOption.ROW_HEADERS,
-          ] : undefined}
+          loading={loading}
         />
       ) }
     </div>

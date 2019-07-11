@@ -1,46 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import {
-  Column, Table as BluePrintTable, Cell, EditableCell, SelectionModes,
+  Column, Table as BluePrintTable, Cell, SelectionModes, TableLoadingOption,
 } from '@blueprintjs/table';
 
 import './index.scss';
 
 function Table({
-  data, columns, loadingOptions, skeletonHeight,
+  data, columns, loading, skeletonHeight,
 }) {
   if (!data || !columns) {
     return null;
   }
 
   const cellRenderer = (rowIndex, colIndex) => {
-    if (loadingOptions) {
+    if (loading) {
       return <Cell />;
     }
+
     const column = columns[colIndex];
     const value = data[rowIndex][column.key];
     const { formatter } = column;
     const displayValue = formatter ? formatter(value) : value;
-
-    if (column.editable) {
-      return (
-        <EditableCell
-          className={column.cellWrapperClass}
-          value={displayValue}
-        >
-          {displayValue}
-        </EditableCell>
-      );
-    }
 
     return <Cell className={column.cellWrapperClass}>{displayValue}</Cell>;
   };
 
   const columnWidths = columns.map(column => column.width || 150);
 
+  let loadingOptions;
+
+  if (loading) {
+    loadingOptions = [TableLoadingOption.CELLS, TableLoadingOption.ROW_HEADERS];
+  }
+
   return (
     <BluePrintTable
-      numRows={loadingOptions ? skeletonHeight : data.length}
+      numRows={_.get(data, 'length') || skeletonHeight}
       className="incognito-table"
       loadingOptions={loadingOptions}
       selectionModes={SelectionModes.NONE}
@@ -71,12 +68,12 @@ Table.propTypes = {
     className: PropTypes.string,
     editable: PropTypes.bool,
   })).isRequired,
-  loadingOptions: PropTypes.arrayOf(PropTypes.string),
+  loading: PropTypes.bool,
   skeletonHeight: PropTypes.number,
 };
 
 Table.defaultProps = {
-  loadingOptions: undefined,
+  loading: false,
   skeletonHeight: 10,
 };
 

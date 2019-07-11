@@ -11,6 +11,7 @@ const logger = require('./logger');
 const MOCK_UP_EVENT = {
   reply: _.noop,
 };
+const DEFAULT_TIMEOUT = 5000; //ms
 const homedir = require('os').homedir();
 const dataPath = path.join(homedir, 'incognito-data');
 const sampleDataPath = path.join(__dirname, '../data.sample');
@@ -22,26 +23,32 @@ function readNodes() {
   return JSON.parse(nodesInString);
 }
 
-async function nodeWithStatus(node) {
+function timeout(TIMEOUT_DATA) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(TIMEOUT_DATA);
+    }, DEFAULT_TIMEOUT);
+  })
+}
+
+async function getFullNodeInfo(node) {
   const rpc = new ConstantRPC(node.host, node.port);
   let status = 'OFFLINE';
   let totalBlocks;
   let beaconHeight;
   let totalShards;
+  let epoch;
   try {
     await rpc.GetNetworkInfo();
     const beaconInfo = await rpc.GetBeaconBestState();
-
     totalShards = beaconInfo.ActiveShards;
     totalBlocks = await rpc.GetBlockCount(-1);
-
     for (let i = 0; i < totalShards; i++) {
       totalBlocks += await rpc.GetBlockCount(i);
     }
-
     const state = await rpc.GetBeaconBestState();
     beaconHeight = state.BeaconHeight;
-
+    epoch = beaconInfo.Epoch;
     status = 'ONLINE';
   } catch (error) {
     logger.error(error.message);
@@ -52,7 +59,15 @@ async function nodeWithStatus(node) {
     totalBlocks,
     beaconHeight,
     totalShards,
+    epoch,
   };
+}
+
+function getNodeInfo(node) {
+  return Promise.race([getFullNodeInfo(node), timeout({
+    ...node,
+    status: 'TIMEOUT',
+  })])
 }
 
 async function addNode(event, newNode) {
@@ -66,7 +81,7 @@ async function addNode(event, newNode) {
   if (err) {
     logger.error(err.message);
   } else {
-    const fullNode = await nodeWithStatus(newNode);
+    const fullNode = await getNodeInfo(newNode);
     event.reply(ADD_NODE, fullNode);
     logger.info('Add node success ' + JSON.stringify(fullNode, null, 4));
   }
@@ -76,9 +91,9 @@ async function getNodes(event) {
   logger.verbose('Getting nodes');
   if (fs.existsSync(dataPath)) {
     let nodes = readNodes();
-    nodes = await Promise.all(nodes.map(nodeWithStatus));
+    nodes = await Promise.all(nodes.map(getNodeInfo));
     event.reply(GET_NODES, nodes);
-    logger.verbose('Get nodes success');
+    logger.verbose('Get nodes success ' + JSON.stringify(nodes, null, 4));
   } else {
     logger.verbose('Data file does not exist. So we will use sample data file.');
     const stream = fs.createReadStream(sampleDataPath)
@@ -86,9 +101,9 @@ async function getNodes(event) {
 
     stream.on('finish', async () => {
       let nodes = readNodes();
-      nodes = await Promise.all(nodes.map(nodeWithStatus));
+      nodes = await Promise.all(nodes.map(getNodeInfo));
       event.reply(GET_NODES, nodes);
-      logger.verbose('Get nodes success');
+      logger.verbose('Get nodes success ' + JSON.stringify(nodes, null, 4));
     });
   }
 }
@@ -123,13 +138,20 @@ function importNodes(event) {
 
 async function getChains(event, nodeName) {
   logger.verbose('Getting chains of ' + nodeName);
-
+  let node;
   try {
 
     const nodes = readNodes();
-    const node = nodes.find(item => item.name === nodeName);
+    node = nodes.find(item => item.name === nodeName);
     const rpc = new ConstantRPC(node.host, node.port);
-    const beaconInfo = await rpc.GetBeaconBestState();
+    const beaconInfo = await Promise.race([rpc.GetBeaconBestState(), timeout(null)]);
+
+    if (!beaconInfo) {
+      throw {
+        code: 'TIMEOUT',
+      };
+    }
+
     const chains = [];
 
     chains.push({
@@ -153,13 +175,17 @@ async function getChains(event, nodeName) {
         })
       }));
 
-    const nodeInfo = await nodeWithStatus(node);
+    const nodeInfo = await getNodeInfo(node);
     nodeInfo.chains = _.orderBy(chains, 'index');
 
     event.reply(GET_CHAINS, nodeInfo);
     logger.verbose('Get chains success ' + JSON.stringify(nodeInfo, null, 4));
   } catch (error) {
-    event.reply(GET_CHAINS, { chains: [], name: nodeName });
+    event.reply(GET_CHAINS, {
+      ...node,
+      status: error.code === 'TIMEOUT' ? 'TIMEOUT' : 'OFFLINE',
+      chains: [],
+    });
     logger.error(error.message);
   }
 }
@@ -201,16 +227,46 @@ async function getBlock(event, {nodeName, blockHash}) {
   const nodes = readNodes();
   const node = nodes.find(item => item.name === nodeName);
   const rpc = new ConstantRPC(node.host, node.port);
-  const block = await rpc.RetrieveBlock(blockHash,1);
 
-  const formattedBlock = {
-    height: block.Height,
-    hash: block.Hash,
-    producer: block.BlockProducer,
-    tXS: block.Txs,
-    fee: block.Fee,
-    reward: block.Reward,
-  };
+  let block = await rpc.RetrieveBlock(blockHash,'1');
+  let isBeaconBlock = false;
+
+  if (!block) {
+    block = await rpc.RetrieveBeaconBlock(blockHash, '1');
+    isBeaconBlock = true;
+  }
+
+  let formattedBlock;
+
+  if (block) {
+    formattedBlock = {
+      hash: block.Hash,
+      shardId: block.ShardId,
+      confirmations: block.Confirmations,
+      version: block.Version,
+      txRoot: block.TxRoot,
+      time: block.Time,
+      previousBlockHash: block.PreviousBlockHash,
+      nextBlockHash: block.NextBlockHash,
+      height: block.Height,
+      producer: block.BlockProducer,
+      producerSign: block.BlockProducerSign,
+      data: block.Data,
+      beaconHeight: block.BeaconHeight,
+      beaconBlockHash: block.BeaconBlockHash,
+      aggregatedSig: block.AggregatedSig,
+      r: block.R,
+      round: block.Round,
+      crossShards: [],
+      epoch: block.Epoch,
+      txs: block.Txs,
+      fee: block.Fee,
+      reward: block.Reward,
+      isBeaconBlock,
+    };
+  } else {
+    formattedBlock = {};
+  }
 
   event.reply(GET_BLOCK, formattedBlock);
   logger.verbose('Get block success ' + JSON.stringify(formattedBlock, null, 4));
@@ -232,8 +288,8 @@ async function deleteNode(event, nodeName) {
   }
 }
 
-// getBlocks(MOCK_UP_EVENT, {nodeName: 'Shard 1', shardId: '0'});
-// getBlock(MOCK_UP_EVENT, 'Shard 1', '9e27cdca1dbff43c6ed9ed564fb8b7bf7bdef7bcda4bcd49e3e2a7f4f1e162ea');
+// getBlocks(MOCK_UP_EVENT, {nodeName: 'Full', shardId: '0'});
+// getBlock(MOCK_UP_EVENT, {nodeName: 'Full', blockHash: '810e634ea9b254a25eb444514a9481eedf864a1cb669fec45c4c8df169bd4b4b'});
 
 ipcMain.on(ADD_NODE, addNode);
 ipcMain.on(DELETE_NODE, deleteNode);

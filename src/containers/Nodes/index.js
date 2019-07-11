@@ -7,6 +7,8 @@ import _ from 'lodash';
 
 import electron from 'utils/electron';
 import validator from 'utils/validator';
+import refreshOnInterval from 'components/HOC/refreshOnInterval';
+import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
 
 import HealthPanel from './HealthPanel';
 import ConnectionPanel from './ConnectionPanel';
@@ -14,13 +16,18 @@ import ConnectionPanel from './ConnectionPanel';
 import './index.scss';
 import { addNode, getNodes, deleteNode } from './actions';
 
-
 class Nodes extends Component {
   state = {
     showNewNodeDialog: false,
     newNodeError: null,
     newNode: {},
+    intervalGetting: true,
   };
+
+  componentDidMount() {
+    const { setRefreshAction, actions } = this.props;
+    setRefreshAction(() => actions.getNodes(true));
+  }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { addingNode } = this.props;
@@ -110,7 +117,9 @@ class Nodes extends Component {
     const {
       nodes, gettingNodes, addingNode, deletingNode,
     } = this.props;
-    const { showNewNodeDialog, newNodeError, newNode } = this.state;
+    const {
+      showNewNodeDialog, newNodeError, newNode, intervalGetting,
+    } = this.state;
 
     return (
       <div className="nodes">
@@ -177,6 +186,9 @@ Nodes.propTypes = {
   gettingNodes: PropTypes.bool,
   addingNode: PropTypes.bool,
   deletingNode: PropTypes.bool,
+
+  // Refresh on interval hoc function
+  setRefreshAction: PropTypes.func.isRequired,
 };
 
 Nodes.defaultProps = {
@@ -186,4 +198,6 @@ Nodes.defaultProps = {
   deletingNode: false,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Nodes);
+const wrappedNodes = consumeRefreshContext(refreshOnInterval(Nodes));
+
+export default connect(mapStateToProps, mapDispatchToProps)(wrappedNodes);

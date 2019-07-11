@@ -6,11 +6,13 @@ import { bindActionCreators } from 'redux';
 import {
   Button, Card, Icon,
 } from '@blueprintjs/core';
-import { TableLoadingOption } from '@blueprintjs/table';
 import { Link } from 'react-router-dom';
 
 import Table from 'components/common/Table';
 import Information from 'components/Information';
+import refreshOnInterval from 'components/HOC/refreshOnInterval';
+import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
+
 import { getChain } from './actions';
 import './index.scss';
 import MOCK_UP_CHAIN from './test_chain.json';
@@ -18,12 +20,15 @@ import MOCK_UP_CHAIN from './test_chain.json';
 class Chain extends Component {
   componentDidMount() {
     const {
-      match, actions,
+      match, actions, setRefreshAction,
     } = this.props;
     this.chainIndex = match.params.chainIndex;
     this.nodeName = match.params.nodeName;
     actions.getChain(this.nodeName, this.chainIndex);
+
+    setRefreshAction(() => actions.getChain(this.nodeName, this.chainIndex, true));
   }
+
 
   onBack = () => {
     const { history } = this.props;
@@ -89,17 +94,17 @@ class Chain extends Component {
 
     return (
       <div className="chain">
-        <Information fields={fields} className={gettingChain ? 'bp3-skeleton' : ''} />
+        <Information
+          fields={fields}
+          className={gettingChain ? 'bp3-skeleton' : ''}
+        />
         { !_.isEmpty(blocks) && (
           <Card className="no-padding">
             <Table
               data={blocks}
               columns={columns}
               skeletonHeight={10}
-              loadingOptions={gettingChain ? [
-                TableLoadingOption.CELLS,
-                TableLoadingOption.ROW_HEADERS,
-              ] : undefined}
+              loading={gettingChain}
             />
           </Card>
         ) }
@@ -118,6 +123,7 @@ Chain.propTypes = {
   history: PropTypes.shape({
     goBack: PropTypes.func.isRequired,
   }).isRequired,
+  setRefreshAction: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -131,4 +137,6 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chain);
+const wrappedChain = consumeRefreshContext(refreshOnInterval(Chain));
+
+export default connect(mapStateToProps, mapDispatchToProps)(refreshOnInterval(wrappedChain));

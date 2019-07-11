@@ -1,16 +1,20 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Navbar as BSNavBar,
   NavbarGroup,
   Button,
   Alignment,
   Classes,
+  InputGroup, FormGroup,
 } from '@blueprintjs/core';
 import { NavLink } from 'react-router-dom';
 
 import './index.scss';
 
-function Navbar() {
+function Navbar({
+  autoRefresh, onToggleAutoRefresh, refreshTime, onChangeRefreshTime,
+}) {
   return (
     <BSNavBar className="navbar no-padding-left">
       <NavbarGroup align={Alignment.LEFT}>
@@ -26,8 +30,31 @@ function Navbar() {
           <Button large className={Classes.MINIMAL} icon="code-block" text="Chains" />
         </NavLink>
       </NavbarGroup>
+      <NavbarGroup align={Alignment.RIGHT}>
+        <FormGroup
+          className="refresh-time-input"
+          label="Refresh time (ms)"
+          labelFor="refresh-time"
+        >
+          <InputGroup
+            onChange={onChangeRefreshTime}
+            defaultValue={refreshTime}
+            id="refresh-time"
+          />
+        </FormGroup>
+        <Button icon="refresh" onClick={onToggleAutoRefresh} minimal>
+          Auto-refresh: {autoRefresh ? 'ON' : 'OFF'}
+        </Button>
+      </NavbarGroup>
     </BSNavBar>
   );
 }
+
+Navbar.propTypes = {
+  autoRefresh: PropTypes.bool.isRequired,
+  onToggleAutoRefresh: PropTypes.func.isRequired,
+  refreshTime: PropTypes.number.isRequired,
+  onChangeRefreshTime: PropTypes.func.isRequired,
+};
 
 export default React.memo(Navbar);

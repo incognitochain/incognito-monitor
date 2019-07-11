@@ -1,2 +1,16 @@
-.chain {
+.block {
+  .cards {
+    > div {
+      border-radius: 0;
+    }
+
+    .title {
+      width: 30%;
+      font-weight: bold;
+    }
+
+    .value {
+      flex: 1;
+    }
+  }
 }

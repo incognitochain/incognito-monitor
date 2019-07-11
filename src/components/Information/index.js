@@ -14,7 +14,7 @@ function Information({ fields, className, rightPart }) {
           <div className="information-field" style={{ maxWidth: item.maxWidth || DEFAULT_MAX_WIDTH }}>
             <div className="field-title text-overflow">{item.title}</div>
             <div
-              className="field-value text-overflow"
+              className={`field-value text-overflow ${item.loading ? 'bp3-skeleton' : ''}`}
               style={{ maxWidth: item.maxWidth || DEFAULT_MAX_WIDTH }}
             >
               {item.value}
