@@ -1,16 +1,33 @@
+const fs = require('fs');
 const winston = require('winston');
-const LOG_FOLDER_PATH = '~/incognito-logs';
+const path = require('path');
+const homedir = require('os').homedir();
+const LOG_FOLDER_PATH = path.join(homedir, 'incognito-logs');
+require('winston-daily-rotate-file');
+
+if(!fs.existsSync((LOG_FOLDER_PATH))) {
+  fs.mkdirSync(LOG_FOLDER_PATH);
+}
 
 const logger = winston.createLogger({
   level: 'verbose',
   format: winston.format.json(),
   transports: [
-    //
-    // - Write to all logs with level `info` and below to `combined.log`
-    // - Write all logs error (and below) to `error.log`.
-    //
-    new winston.transports.File({ filename: `${LOG_FOLDER_PATH}/error.log`, level: 'error' }),
-    new winston.transports.File({ filename: `${LOG_FOLDER_PATH}/combined.log` })
+    new (winston.transports.DailyRotateFile)({
+      filename: path.join(LOG_FOLDER_PATH, 'error-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD-HH',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '3d',
+      level: 'error',
+    }),
+    new (winston.transports.DailyRotateFile)({
+      filename: path.join(LOG_FOLDER_PATH, 'combined-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD-HH',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '3d'
+    }),
   ]
 });
 
