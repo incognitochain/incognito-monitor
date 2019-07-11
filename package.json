@@ -4,9 +4,9 @@
     "name": "Incognito",
     "email": "incognito@autonomous.nyc"
   },
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "main": "./electron/index.js",
+  "main": "./electron/build.js",
   "build": {
     "appId": "incognito.monitoor",
     "mac": {
@@ -20,9 +20,10 @@
       "target": "AppImage"
     },
     "files": [
+      "!node_modules/**/*",
       "build/**/*",
       "data.sample",
-      "electron/**/*"
+      "electron/build.js"
     ]
   },
   "homepage": "./",
@@ -108,11 +109,12 @@
   "scripts": {
     "start-react": "node scripts/start.js",
     "build-react": "node scripts/build.js",
+    "build-electron": "webpack --config ./config/webpack.electron.config.js",
     "test": "node scripts/test.js",
     "electron": "electron ./electron",
     "package": "rm -rf dist/ && electron-builder -mwl",
     "release": "yarn build-react && electron-builder --publish=always",
-    "build": "yarn build-react && yarn package",
+    "build": "yarn build-electron && yarn build-react && yarn package",
     "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {
