@@ -94,7 +94,7 @@ class Committees extends Component {
           fields={fields}
         />
         <Card className="p-10">
-          <h5>Beacon Committees</h5>
+          <h4>Beacon Committees</h4>
           {_.get(committees, 'beacon', []).map((value, index) => (
             <div key={value} className="flex cards">
               <Card className="title p-10">#{index + 1}</Card>
@@ -104,7 +104,7 @@ class Committees extends Component {
         </Card>
         {_.map(committees.shards, (shardCommittees, shardIndex) => (
           <Card className="p-10">
-            <h5>Shard #{_.toInteger(shardIndex) + 1} Committees</h5>
+            <h4>Shard #{_.toInteger(shardIndex) + 1} Committees</h4>
             {_.map(shardCommittees, (value, index) => (
               <div key={value} className="flex cards">
                 <Card className="title p-10">#{index + 1}</Card>

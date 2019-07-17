@@ -4,7 +4,7 @@
     "name": "Incognito",
     "email": "incognito@autonomous.nyc"
   },
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "main": "./electron/build.js",
   "build": {
