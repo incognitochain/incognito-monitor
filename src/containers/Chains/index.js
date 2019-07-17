@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, InputGroup, Toaster, Intent, Position,
+  Card, InputGroup, Toaster, Intent, Position, Tooltip, Button,
 } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
 
@@ -107,6 +107,12 @@ class Chains extends Component {
           placeholder="Block hash, tx hash or block number"
           round
         />
+        <Tooltip
+          content="Use format <shard_index>:<block_number> to search block by block number"
+          position={Position.LEFT}
+        >
+          <Button icon="help" minimal />
+        </Tooltip>
       </form>
     );
   }

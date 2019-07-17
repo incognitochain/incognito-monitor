@@ -191,7 +191,7 @@ async function getCommittees(nodeName) {
   const node = findNode(nodeName);
   const nodeInfo = await getNodeCommittees(node);
 
-  logger.verbose(`Getting committees of node ${nodeName} success ${nodeInfo}`);
+  logger.verbose(`Getting committees of node ${nodeName} success`, nodeInfo);
   return nodeInfo;
 }
 
