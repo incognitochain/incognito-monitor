@@ -93,22 +93,22 @@ class Committees extends Component {
           className={gettingCommittees ? 'bp3-skeleton' : ''}
           fields={fields}
         />
-        <Card>
+        <Card className="p-10">
           <h5>Beacon Committees</h5>
           {_.get(committees, 'beacon', []).map((value, index) => (
             <div key={value} className="flex cards">
-              <Card className="title">#{index + 1}</Card>
-              <Card className="value text-overflow">{value}</Card>
+              <Card className="title p-10">#{index + 1}</Card>
+              <Card className="value text-overflow p-10">{value}</Card>
             </div>
           ))}
         </Card>
         {_.map(committees.shards, (shardCommittees, shardIndex) => (
-          <Card>
+          <Card className="p-10">
             <h5>Shard #{_.toInteger(shardIndex) + 1} Committees</h5>
             {_.map(shardCommittees, (value, index) => (
               <div key={value} className="flex cards">
-                <Card className="title">#{index + 1}</Card>
-                <Card className="value text-overflow">{value}</Card>
+                <Card className="title p-10">#{index + 1}</Card>
+                <Card className="value text-overflow p-10">{value}</Card>
               </div>
             ))}
           </Card>

@@ -126,8 +126,8 @@ class Transaction extends Component {
         <Card className={`no-padding ${gettingTransaction ? 'bp3-skeleton' : ''}`}>
           {transactionFields.map(field => (
             <div key={field.title} className="flex cards">
-              <Card className="title">{field.title}</Card>
-              <Card className="value text-overflow">{field.value}</Card>
+              <Card className="title p-10">{field.title}</Card>
+              <Card className="value text-overflow p-10">{field.value}</Card>
             </div>
           ))}
         </Card>
