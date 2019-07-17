@@ -3,6 +3,12 @@ const ConstantRPC = require('../incognitoRpc');
 
 const { logger, formatter } = utils;
 
+/**
+ * Get blocks of a shard
+ * @param node
+ * @param shardId
+ * @returns {Promise<[Object]>}
+ */
 async function getBlocks(node, shardId) {
   logger.verbose(`Getting blocks of shard ${shardId} of node ${node.host}`);
   const rpc = new ConstantRPC(node.host, node.port);
@@ -13,53 +19,59 @@ async function getBlocks(node, shardId) {
   return formattedBlocks;
 }
 
+/**
+ * Get a block by hash
+ * @param {Object} node
+ * @param {String} blockHash
+ * @returns {Promise<{Object}>} block
+ */
 async function getBlock(node, blockHash) {
   logger.verbose(`Getting block ${blockHash} of node ${node.host}`);
 
   const rpc = new ConstantRPC(node.host, node.port);
-  let block = await rpc.RetrieveBlock(blockHash, '1');
+  const hashType = await rpc.CheckHashValue(blockHash);
+  let block;
+  let isBeaconBlock;
 
-  if (!block) {
+  if (hashType.IsBeaconBlock) {
     block = await rpc.RetrieveBeaconBlock(blockHash, '1');
+    isBeaconBlock = true;
+  } else {
+    block = await rpc.RetrieveBlock(blockHash, '1');
+    isBeaconBlock = false;
   }
 
   let formattedBlock;
-
   if (block) {
-    formattedBlock = formatter.formatBlock(block);
+    formattedBlock = formatter.formatBlock(block, isBeaconBlock);
   } else {
     formattedBlock = {};
   }
 
-  logger.verbose('Get block success ', formattedBlock);
+  logger.verbose('Get block success', formattedBlock);
   return formattedBlock;
 }
 
 /**
- * Search beacon block by block hash
- * @param {String} host
- * @param {String || Number} port
- * @param {String} hash Block hash
+ *
+ * @param {Object} node
+ * @param {Number} height height must be a number
+ * @param {Number} shardId shardId must be a number
+ * @returns {Promise<{Object}>}
  */
-function searchBeaconBlockByHash(host, port, hash) {
-  const rpc = new ConstantRPC(host, port);
-  return rpc.RetrieveBeaconBlock(hash, '1');
-}
+async function getBlockByHeight(node, height, shardId) {
+  logger.verbose(`Getting block height ${height} of node ${node.host}`);
 
-/**
- * Search block by block hash
- * @param {String} host
- * @param {String || Number} port
- * @param {String} hash Block hash or Block height
- */
-async function searchBlockByHash(host, port, hash) {
-  const rpc = new ConstantRPC(host, port);
-  return rpc.RetrieveBlock(hash, '1');
+  const rpc = new ConstantRPC(node.host, node.port);
+  const hash = await rpc.GetBlockHash(shardId, height);
+  const block = getBlock(node, hash);
+
+  logger.verbose(`Getting block height ${height} of node ${node.host} success`, block);
+  return block;
 }
 
 module.exports = {
   getBlocks,
   getBlock,
-  searchBlockByHash,
-  searchBeaconBlockByHash,
+  getBlockByHeight,
 };

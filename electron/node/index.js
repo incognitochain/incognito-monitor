@@ -11,7 +11,7 @@ const { logger } = utils;
 const homedir = os.homedir();
 
 const dataPath = path.join(homedir, 'incognito-data');
-const sampleDataPath = path.join(__dirname, '../data.sample');
+const sampleDataPath = path.join(__dirname, '../../data.sample');
 
 function readNodes() {
   const nodesInString = fs.readFileSync(dataPath) || '[]';

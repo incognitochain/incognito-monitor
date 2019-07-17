@@ -4,7 +4,7 @@ const utils = require('../utils');
 
 const { formatter, logger } = utils;
 
-function searchTransaction(host, port, searchValue) {
+function getTransactionByHash(host, port, searchValue) {
   const rpc = new ConstantRPC(host, port);
   return rpc.GetTransactionByHash(searchValue);
 }
@@ -44,6 +44,6 @@ async function getPendingTransactions(node) {
 
 module.exports = {
   getTransaction,
-  searchTransaction,
+  getTransactionByHash,
   getPendingTransactions,
 };

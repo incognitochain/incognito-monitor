@@ -3,15 +3,14 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {
-  Button, Card, Icon,
-} from '@blueprintjs/core';
+import { Card } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
 
 import Table from 'components/common/Table';
 import Information from 'components/Information';
 import refreshOnInterval from 'components/HOC/refreshOnInterval';
 import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
+import BackButton from 'components/BackButton';
 
 import { getChain } from './actions';
 import './index.scss';
@@ -29,14 +28,8 @@ class Chain extends Component {
     setRefreshAction(() => actions.getChain(this.nodeName, this.chainIndex, true));
   }
 
-
-  onBack = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
-
   render() {
-    const { gettingChain } = this.props;
+    const { gettingChain, history } = this.props;
     let { chain } = this.props;
     if (gettingChain) {
       chain = MOCK_UP_CHAIN;
@@ -76,10 +69,7 @@ class Chain extends Component {
     const fields = [
       {
         title: 'BACK',
-        value:
-  <Button minimal onClick={this.onBack}>
-    <Icon icon="arrow-left" />
-  </Button>,
+        value: <BackButton history={history} />,
       }, {
         title: 'Chain',
         value: name,

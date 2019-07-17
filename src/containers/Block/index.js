@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {
-  Button, Icon, Card,
-} from '@blueprintjs/core';
+import { Card } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
 
 import Information from 'components/Information';
+import BackButton from 'components/BackButton';
+
 import { getBlock } from './actions';
 import './index.scss';
 import MOCK_UP_BLOCK from './test_block.json';
@@ -34,13 +35,8 @@ class Block extends Component {
     }
   }
 
-  onBack = () => {
-    const { history } = this.props;
-    history.goBack();
-  };
-
   render() {
-    const { gettingBlock } = this.props;
+    const { gettingBlock, history } = this.props;
     let { block } = this.props;
     if (gettingBlock) {
       block = MOCK_UP_BLOCK;
@@ -64,20 +60,18 @@ class Block extends Component {
       aggregatedSig,
       beaconHeight,
       beaconBlockHash,
-      txs,
+      txHashes,
       fee,
       reward,
+      isBeaconBlock,
     } = block;
 
     const fields = [
       {
         title: 'BACK',
-        value:
-  <Button minimal onClick={this.onBack}>
-    <Icon icon="arrow-left" />
-  </Button>,
+        value: <BackButton history={history} />,
       }, {
-        title: 'Block',
+        title: `${isBeaconBlock ? 'Beacon ' : ''}Block`,
         value: hash,
         maxWidth: 700,
       },
@@ -146,7 +140,7 @@ class Block extends Component {
         value: reward,
       }, {
         title: 'TXs',
-        value: txs || 0,
+        value: _.get(txHashes, 'length') || 0,
       },
     ];
 

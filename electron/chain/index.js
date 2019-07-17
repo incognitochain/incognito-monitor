@@ -43,7 +43,7 @@ async function getChains(node) {
     logger.verbose('Get chains success', { node, chains });
     return _.orderBy(chains, 'index');
   } catch (error) {
-    logger.error(`Get chains failed ${node.host}`, error.message);
+    logger.error(`Get chains failed ${node.host}`, error);
     return [];
   }
 }

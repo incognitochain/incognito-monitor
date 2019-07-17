@@ -41,15 +41,6 @@ NodeSelect.propTypes = {
   nodes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   node: PropTypes.shape({
     name: PropTypes.string,
-    host: PropTypes.string,
-    port: PropTypes.string,
-    status: PropTypes.string,
-    totalBlocks: PropTypes.number,
-    chains: PropTypes.arrayOf(PropTypes.shape({
-      name: PropTypes.string,
-      hash: PropTypes.string,
-      height: PropTypes.number,
-    })),
   }).isRequired,
   baseUrl: PropTypes.string.isRequired,
   history: PropTypes.shape({

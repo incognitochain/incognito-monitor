@@ -27,6 +27,7 @@ const blockController = require('./block');
 const transactionController = require('./transaction');
 
 const { formatter, logger } = utils;
+const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
 
 let mainWindow;
 let willQuitApp = false;
@@ -94,16 +95,13 @@ async function searchByHash(host, port, hash) {
   const hashType = await rpc.CheckHashValue(hash);
 
   if (hashType.IsBeaconBlock || hashType.IsBlock) {
-    const searchBlockFunction = hashType.isBeaconBlock ? blockController.searchBeaconBlockByHash
-      : blockController.searchBlockByHash;
-    const block = await searchBlockFunction(host, port, hash);
-    const formattedBlock = formatter.formatBlock(block);
+    const block = await blockController.getBlock({ host, port }, hash);
     return {
       type: 'block',
-      data: formattedBlock,
+      data: block,
     };
   } if (hashType.IsTransaction) {
-    const transaction = await transactionController.searchTransaction(host, port, hash) || {};
+    const transaction = await transactionController.getTransactionByHash(host, port, hash) || {};
     if (!_.isEmpty(transaction)) {
       const formattedTransaction = formatter.formatTransaction(transaction);
       return {
@@ -118,11 +116,22 @@ async function searchByHash(host, port, hash) {
 
 async function search(event, { nodeName, searchValue }) {
   logger.verbose(`Search ${searchValue} in ${nodeName}`);
-
   try {
     const node = nodeController.findNode(nodeName);
-    const { host, port } = node;
-    const result = searchByHash(host, port, searchValue);
+    let result;
+    if (SHARD_BLOCK_HEIGHT_REGEX.test(searchValue)) {
+      const shardId = _.toInteger(searchValue.split(':')[0]);
+      const blockHeight = _.toInteger(searchValue.split(':')[1]);
+
+      result = await blockController.getBlockByHeight(node, blockHeight, shardId);
+      result = {
+        type: 'block',
+        data: result,
+      };
+    } else {
+      const { host, port } = node;
+      result = await searchByHash(host, port, searchValue);
+    }
 
     if (result) {
       event.reply(SEARCH, result);
@@ -131,9 +140,6 @@ async function search(event, { nodeName, searchValue }) {
       event.reply(SEARCH, null);
       logger.verbose(`Search ${searchValue} in ${nodeName} Not found`);
     }
-
-    event.reply(SEARCH, null);
-    logger.verbose(`Search ${searchValue} in ${nodeName} Not found`);
   } catch (error) {
     event.reply(SEARCH, null);
     logger.error(`Search ${searchValue} in ${nodeName} ${error.message}`);

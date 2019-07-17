@@ -1,4 +1,4 @@
-function formatBlock(block) {
+function formatBlock(block, isBeaconBlock) {
   return {
     hash: block.Hash,
     shardId: block.ShardId,
@@ -20,9 +20,11 @@ function formatBlock(block) {
     crossShards: [],
     epoch: block.Epoch,
     txs: block.Txs,
+    txHashes: block.TxHashes,
     fee: block.Fee,
     reward: block.Reward,
-    isBeaconBlock: block.ShardId === -1,
+    isBeaconBlock,
+    instructions: block.Instructions,
   };
 }
 
