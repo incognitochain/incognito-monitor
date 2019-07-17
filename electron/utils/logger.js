@@ -42,24 +42,27 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = {
-  info: function(message) {
+  info: function(message, data) {
     logger.log({
       level: 'info',
       message,
+      data,
     });
   },
 
-  verbose: function(message) {
+  verbose: function(message, data) {
     logger.log({
       level: 'verbose',
       message,
+      data,
     });
   },
 
-  error: function(message) {
+  error: function(message, data) {
     logger.log({
       level: 'error',
       message,
+      data,
     });
   },
 };

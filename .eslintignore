@@ -4,6 +4,6 @@
 /jsdoc/**
 /config
 serviceWorker.js
-/electron
+/electron/build.js
 /dist/**
 /.idea

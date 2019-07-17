@@ -1,0 +1,67 @@
+{
+  "host": "172.105.200.109",
+  "id": "",
+  "name": "Shard 1",
+  "port": "20005",
+  "status": "ONLINE",
+  "totalBlocks": 142016,
+  "beaconHeight": 185239,
+  "committees": {
+    "beacon": [
+      "16B6ox9Fd3T4hLegauBh68SdfvaQjZdL4tob65D1ku73uosJDJ5",
+      "15PjLVkFtuD9DG1GcHcvLB34PB8GFDNR7nBQFvjWmKL9Rg8AURq",
+      "15xGr94Ndh9mtVmmudiqGxdMRBGduGfXSKfMaW4WVwNJxPZ8Bmb",
+      "14vz8Bdi6kfuU3NqU1HAzNCYvYLsRPF62MgkbjRWrRHLRjBgSLp"
+    ],
+    "shards": {
+      "0": [
+        "17yV5NTyFPm73sHa7tK3mdKbMJmVavdrvZzhCynAexcg81BYfQe",
+        "15gjFF5JCqTUFn2PSK4Bq7rQXBnU5qxRQQTfjjf3cZxGVd4ZQru",
+        "17tN32moCx4QdmV9n9suPxqSCvrQPnujVNgvjwvFrKPTUU4r6rj",
+        "14tcxUrXtR7daLG2LupmM28gjqL3FaAPRh5PDhxWJt6RkgYv1Ln"
+      ],
+      "1": [
+        "15XQUBiA4cMw6yjNemDKgocoJksByWSphp4VN6HJ5LKjjwDccUC",
+        "16aewLZRQyzQvCWMd1gMmSNzuFK7Kt7Hga2iP8HvhFo1CoJBjjc",
+        "16gXJLo4cUCUcRnnitnFCV9js5maHERTmHoXJkVWYbVTG7fG8TM",
+        "182HJsTAquUNbSdovcQiDiWsuV97KFqgo7EAHM5fGgHgih3BSwr"
+      ],
+      "2": [
+        "18bgo3QvMCHTcyjugCm3wwf9hZSvVXcjcyanRqghWxpRjymGgLs",
+        "16QbF59yHrnWeSYY3GoicrhTY69iu3j2D33cUWKyhpuhB8UwZTm",
+        "153ELB64pDEFbfsyvsbud6uocge1iFZoHJRDzuHntMJfkzTLxcU",
+        "15wT1a8QjNAC72qUfEMDDQXkBdb8dDyLZghrFi1bLEictfo6NrD"
+      ],
+      "3": [
+        "1716njPyRgwZ8NSJw4YZsvWRH72DvdnmZvY5yk4PivsEyg5VGee",
+        "15LnEZQMxji4EDxpWW2hVRi8LVMujcLL1PwKGXQ1qerwkyAv9LH",
+        "14xb53Hd5t5SeJDTcicRTHDeTMwkgUtBBTLiLVnem6x8N3hTCtV",
+        "18fNPcgJD9HW4QSs2nRQhY8DKqQ4trsybAHAegAVyNZD6kkRW8X"
+      ],
+      "4": [
+        "17Fb8wfBePjJmCza4a9wdbBSFGuTeipCgzZkD4HuDJU8ZQ3zh3R",
+        "15dYhvzyEM35KzsbhKriZLLaTA3daFyjBwmLDWfUo25BPFv3yzQ",
+        "16ske9H4mfBonHEr29jjiy2dDnxnxoWrkysUKgVzb17QNBMky8W",
+        "17mciHmKDrkyW44vLrFZsfXorHJQJaYkCmfHFSHs8YsZTX9H9R2"
+      ],
+      "5": [
+        "18GVjdYK1Axodj2t6UPSoUgxp1DVsNkdPCdBLiAqDNEGGmm9pkP",
+        "17FWcz8eKP12JZ79JBpN7EkEeqSPb3NJFf8zuD6deg9njakgEcW",
+        "17MfeJ3BDYqrWtGVj2vkg7KLfKk6nE7XP7TzRBCRecUoUvY1Bck",
+        "16q49gdqn7TsoKVhpXzezAwbLrid1MjzcHkoek6PbnunzySq3nw"
+      ],
+      "6": [
+        "18SzfERw6ZaZ3RZEX9h9Gz3P3QGarfmAbDH7hbcS578291TjxRx",
+        "14uNEoFv6SBzrwUUqQJcq4adegaNbCbm7GsdCuD6Fc7A4Cme9ge",
+        "17dr1RVVbVZ4j2Nf4gsY624ZjsjeCUuQsn8bma56CtoJTTEt5j5",
+        "15zva28wReHAne8DviAZZ4PNukLJzq3nfy69eXNz4X3yB96C6EP"
+      ],
+      "7": [
+        "16wRajzNr1MU54jXssUBeQW9b6BHCBFFwjKe3DDuvYKTaGhizbn",
+        "17mnQ6Kkdj9QbPHdt94j1hyYMryrDxbSzJhBZf1LT6q2PdqbfyZ",
+        "15AHc14cVdHRnwUuQwsnRPDYPqBL3j8KVWtYtRA7aLkzLx8J3AV",
+        "17PitXPzVYpV4p7FGEjTeEHhSyZFyDnV96LkRvkBpr62aYERQqK"
+      ]
+    }
+  }
+}

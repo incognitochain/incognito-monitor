@@ -1,295 +1,165 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const fs = require('fs');
+const {
+  app, BrowserWindow, ipcMain, dialog,
+  // eslint-disable-next-line import/no-extraneous-dependencies
+} = require('electron');
 const path = require('path');
 const _ = require('lodash');
 const isDev = require('electron-is-dev');
 const ConstantRPC = require('./incognitoRpc');
 const {
-  ADD_NODE, EXPORT_NODES, GET_NODES, IMPORT_NODES, GET_CHAINS, GET_BLOCKS, GET_BLOCK, DELETE_NODE,
+  ADD_NODE,
+  EXPORT_NODES,
+  GET_NODES,
+  IMPORT_NODES,
+  GET_CHAINS,
+  GET_BLOCKS,
+  GET_BLOCK,
+  DELETE_NODE,
+  SEARCH,
+  GET_TRANSACTION,
+  GET_COMMITTEES,
+  GET_PENDING_TRANSACTIONS,
 } = require('./events');
-const logger = require('./logger');
-const MOCK_UP_EVENT = {
-  reply: _.noop,
-};
-const DEFAULT_TIMEOUT = 5000; //ms
-const homedir = require('os').homedir();
-const dataPath = path.join(homedir, 'incognito-data');
-const sampleDataPath = path.join(__dirname, '../data.sample');
+const utils = require('./utils');
+const nodeController = require('./node');
+const chainController = require('./chain');
+const blockController = require('./block');
+const transactionController = require('./transaction');
+
+const { formatter, logger } = utils;
+
 let mainWindow;
 let willQuitApp = false;
 
-function readNodes() {
-  const nodesInString = fs.readFileSync(dataPath) || '[]';
-  return JSON.parse(nodesInString);
-}
-
-function timeout(TIMEOUT_DATA) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(TIMEOUT_DATA);
-    }, DEFAULT_TIMEOUT);
-  })
-}
-
-async function getFullNodeInfo(node) {
-  const rpc = new ConstantRPC(node.host, node.port);
-  let status = 'OFFLINE';
-  let totalBlocks;
-  let beaconHeight;
-  let totalShards;
-  let epoch;
-  try {
-    await rpc.GetNetworkInfo();
-    const beaconInfo = await rpc.GetBeaconBestState();
-    totalShards = beaconInfo.ActiveShards;
-    totalBlocks = await rpc.GetBlockCount(-1);
-    for (let i = 0; i < totalShards; i++) {
-      totalBlocks += await rpc.GetBlockCount(i);
-    }
-    const state = await rpc.GetBeaconBestState();
-    beaconHeight = state.BeaconHeight;
-    epoch = beaconInfo.Epoch;
-    status = 'ONLINE';
-  } catch (error) {
-    logger.error(error.message);
-  }
-  return {
-    ...node,
-    status,
-    totalBlocks,
-    beaconHeight,
-    totalShards,
-    epoch,
-  };
-}
-
-function getNodeInfo(node) {
-  return Promise.race([getFullNodeInfo(node), timeout({
-    ...node,
-    status: 'TIMEOUT',
-  })])
-}
-
 async function addNode(event, newNode) {
-  logger.verbose('Adding node ' + JSON.stringify(newNode, null, 4));
-
-  const nodes = readNodes();
-  const newNodes = [...nodes, newNode];
-
-  const err = fs.writeFileSync(dataPath, JSON.stringify(newNodes, null, 4));
-
-  if (err) {
-    logger.error(err.message);
-  } else {
-    const fullNode = await getNodeInfo(newNode);
-    event.reply(ADD_NODE, fullNode);
-    logger.info('Add node success ' + JSON.stringify(fullNode, null, 4));
-  }
+  const result = await nodeController.addNode(newNode);
+  event.reply(ADD_NODE, result);
 }
 
 async function getNodes(event) {
-  logger.verbose('Getting nodes');
-  if (fs.existsSync(dataPath)) {
-    let nodes = readNodes();
-    nodes = await Promise.all(nodes.map(getNodeInfo));
-    event.reply(GET_NODES, nodes);
-    logger.verbose('Get nodes success ' + JSON.stringify(nodes, null, 4));
-  } else {
-    logger.verbose('Data file does not exist. So we will use sample data file.');
-    const stream = fs.createReadStream(sampleDataPath)
-      .pipe(fs.createWriteStream(dataPath));
-
-    stream.on('finish', async () => {
-      let nodes = readNodes();
-      nodes = await Promise.all(nodes.map(getNodeInfo));
-      event.reply(GET_NODES, nodes);
-      logger.verbose('Get nodes success ' + JSON.stringify(nodes, null, 4));
-    });
-  }
+  const result = await nodeController.getNodes();
+  event.reply(GET_NODES, result);
 }
 
-function exportNodes(event) {
+async function exportNodes(event) {
   const savedFilePath = dialog.showSaveDialog({ properties: ['openFile'] });
-  if (savedFilePath) {
-    const stream = fs.createReadStream(dataPath)
-      .pipe(fs.createWriteStream(savedFilePath));
-    stream.on('finish', () => {
-      event.returnValue = 'success';
-      logger.verbose('Export success');
-    });
-  } else {
-    event.returnValue = 'cancel';
-  }
+
+  // eslint-disable-next-line no-param-reassign
+  event.returnValue = await nodeController.exportNodes(savedFilePath);
 }
 
-function importNodes(event) {
+async function importNodes(event) {
   const filePath = dialog.showOpenDialog({ properties: ['openFile'] });
-  if (filePath && filePath.length) {
-    const stream = fs.createReadStream(filePath[0])
-      .pipe(fs.createWriteStream(dataPath));
-    stream.on('finish', () => {
-      event.returnValue = 'success';
-      logger.verbose('Import success');
-    });
-  } else {
-    event.returnValue = 'cancel';
-  }
+
+  // eslint-disable-next-line no-param-reassign
+  event.returnValue = await nodeController.importNodes(filePath);
+}
+
+async function deleteNode(event, nodeName) {
+  const result = await nodeController.deleteNode(nodeName);
+  event.reply(DELETE_NODE, result);
 }
 
 async function getChains(event, nodeName) {
-  logger.verbose('Getting chains of ' + nodeName);
-  let node;
-  try {
+  const node = nodeController.findNode(nodeName);
+  const nodeInfo = await nodeController.getNodeInfo(node);
 
-    const nodes = readNodes();
-    node = nodes.find(item => item.name === nodeName);
-    const rpc = new ConstantRPC(node.host, node.port);
-    const beaconInfo = await Promise.race([rpc.GetBeaconBestState(), timeout(null)]);
-
-    if (!beaconInfo) {
-      throw {
-        code: 'TIMEOUT',
-      };
-    }
-
-    const chains = [];
-
-    chains.push({
-      name: 'Beacon',
-      height: beaconInfo.BeaconHeight,
-      hash: beaconInfo.BestBlockHash,
-      epoch: beaconInfo.Epoch,
-      index: -1,
-    });
-
-    await Promise.all(
-      _.range(0, beaconInfo.ActiveShards).map(async shardIndex => {
-        const shard = await rpc.GetShardBestState(shardIndex);
-        chains.push({
-          name: `Shard ${shardIndex + 1}`,
-          height: shard.ShardHeight,
-          hash: shard.BestBlockHash,
-          epoch: shard.Epoch,
-          totalTxs: shard.TotalTxns,
-          index: shardIndex,
-        })
-      }));
-
-    const nodeInfo = await getNodeInfo(node);
-    nodeInfo.chains = _.orderBy(chains, 'index');
-
-    event.reply(GET_CHAINS, nodeInfo);
-    logger.verbose('Get chains success ' + JSON.stringify(nodeInfo, null, 4));
-  } catch (error) {
-    event.reply(GET_CHAINS, {
-      ...node,
-      status: error.code === 'TIMEOUT' ? 'TIMEOUT' : 'OFFLINE',
-      chains: [],
-    });
-    logger.error(error.message);
-  }
+  nodeInfo.chains = await chainController.getChains(node);
+  event.reply(GET_CHAINS, nodeInfo);
 }
 
-async function getBlocks(event, {nodeName, shardId}) {
-  logger.verbose(`Getting blocks of shard ${shardId} of node ${nodeName}`);
-
-  const shardIndex = parseInt(shardId);
-  const nodes = readNodes();
-  const node = nodes.find(item => item.name === nodeName);
-  const rpc = new ConstantRPC(node.host, node.port);
-  const blocks = await rpc.GetBlocks(10, shardIndex);
-  const formattedBlocks = blocks.map(block => ({
-    height: block.Height,
-    hash: block.Hash,
-    producer: block.BlockProducer,
-    tXS: block.Txs || 0,
-    fee: block.Fee || 0,
-    reward: block.Reward || 0,
-    time: block.Time,
-  }));
-
+async function getBlocks(event, { nodeName, shardId }) {
+  const node = nodeController.findNode(nodeName);
+  const formattedBlocks = await blockController.getBlocks(node, shardId);
 
   const latestBlock = formattedBlocks[0];
   const chain = {
-    name: shardIndex === -1 ? 'Beacon' : `Shard ${shardIndex + 1}`,
+    name: shardId === -1 ? 'Beacon' : `Shard ${shardId + 1}`,
     totalBlocks: latestBlock.height,
     producer: latestBlock.producer,
     blocks: formattedBlocks,
   };
 
   event.reply(GET_BLOCKS, chain);
-  logger.verbose('Get blocks success ' + JSON.stringify(chain, null, 4));
 }
 
-async function getBlock(event, {nodeName, blockHash}) {
-  logger.verbose(`Getting block ${blockHash} of node ${nodeName}`);
-
-  const nodes = readNodes();
-  const node = nodes.find(item => item.name === nodeName);
-  const rpc = new ConstantRPC(node.host, node.port);
-
-  let block = await rpc.RetrieveBlock(blockHash,'1');
-  let isBeaconBlock = false;
-
-  if (!block) {
-    block = await rpc.RetrieveBeaconBlock(blockHash, '1');
-    isBeaconBlock = true;
-  }
-
-  let formattedBlock;
-
-  if (block) {
-    formattedBlock = {
-      hash: block.Hash,
-      shardId: block.ShardId,
-      confirmations: block.Confirmations,
-      version: block.Version,
-      txRoot: block.TxRoot,
-      time: block.Time,
-      previousBlockHash: block.PreviousBlockHash,
-      nextBlockHash: block.NextBlockHash,
-      height: block.Height,
-      producer: block.BlockProducer,
-      producerSign: block.BlockProducerSign,
-      data: block.Data,
-      beaconHeight: block.BeaconHeight,
-      beaconBlockHash: block.BeaconBlockHash,
-      aggregatedSig: block.AggregatedSig,
-      r: block.R,
-      round: block.Round,
-      crossShards: [],
-      epoch: block.Epoch,
-      txs: block.Txs,
-      fee: block.Fee,
-      reward: block.Reward,
-      isBeaconBlock,
-    };
-  } else {
-    formattedBlock = {};
-  }
-
+async function getBlock(event, { nodeName, blockHash }) {
+  const node = nodeController.findNode(nodeName);
+  const formattedBlock = await blockController.getBlock(node, blockHash);
   event.reply(GET_BLOCK, formattedBlock);
-  logger.verbose('Get block success ' + JSON.stringify(formattedBlock, null, 4));
 }
 
-async function deleteNode(event, nodeName) {
-  logger.verbose('Deleting node ' + nodeName);
+async function searchByHash(host, port, hash) {
+  const rpc = new ConstantRPC(host, port);
+  const hashType = await rpc.CheckHashValue(hash);
 
-  const nodes = readNodes();
-  const newNodes = nodes.filter(node => node.name !== nodeName);
+  if (hashType.IsBeaconBlock || hashType.IsBlock) {
+    const searchBlockFunction = hashType.isBeaconBlock ? blockController.searchBeaconBlockByHash
+      : blockController.searchBlockByHash;
+    const block = await searchBlockFunction(host, port, hash);
+    const formattedBlock = formatter.formatBlock(block);
+    return {
+      type: 'block',
+      data: formattedBlock,
+    };
+  } if (hashType.IsTransaction) {
+    const transaction = await transactionController.searchTransaction(host, port, hash) || {};
+    if (!_.isEmpty(transaction)) {
+      const formattedTransaction = formatter.formatTransaction(transaction);
+      return {
+        type: 'transaction',
+        data: formattedTransaction,
+      };
+    }
+  }
 
-  const err = fs.writeFileSync(dataPath, JSON.stringify(newNodes, null, 4));
+  return null;
+}
 
-  if (err) {
-    logger.error(err.message);
-  } else {
-    event.reply(DELETE_NODE, nodeName);
-    logger.info('Delete node success ' + nodeName);
+async function search(event, { nodeName, searchValue }) {
+  logger.verbose(`Search ${searchValue} in ${nodeName}`);
+
+  try {
+    const node = nodeController.findNode(nodeName);
+    const { host, port } = node;
+    const result = searchByHash(host, port, searchValue);
+
+    if (result) {
+      event.reply(SEARCH, result);
+      logger.verbose(`Search ${searchValue} in ${nodeName} success`, result);
+    } else {
+      event.reply(SEARCH, null);
+      logger.verbose(`Search ${searchValue} in ${nodeName} Not found`);
+    }
+
+    event.reply(SEARCH, null);
+    logger.verbose(`Search ${searchValue} in ${nodeName} Not found`);
+  } catch (error) {
+    event.reply(SEARCH, null);
+    logger.error(`Search ${searchValue} in ${nodeName} ${error.message}`);
   }
 }
 
-// getBlocks(MOCK_UP_EVENT, {nodeName: 'Full', shardId: '0'});
-// getBlock(MOCK_UP_EVENT, {nodeName: 'Full', blockHash: '810e634ea9b254a25eb444514a9481eedf864a1cb669fec45c4c8df169bd4b4b'});
+async function getTransaction(event, { nodeName, transactionHash }) {
+  const node = nodeController.findNode(nodeName);
+  const transaction = await transactionController.getTransaction(node, transactionHash);
+  event.reply(GET_TRANSACTION, transaction);
+}
+
+async function getCommittees(event, nodeName) {
+  const result = await nodeController.getCommittees(nodeName);
+  event.reply(GET_COMMITTEES, result);
+}
+
+async function getPendingTransactions(event, nodeName) {
+  const node = nodeController.findNode(nodeName);
+  const transactions = await transactionController.getPendingTransactions(node);
+
+  const nodeInfo = await nodeController.getNodeInfo(node);
+  nodeInfo.transactions = transactions;
+
+  event.reply(GET_PENDING_TRANSACTIONS, nodeInfo);
+}
 
 ipcMain.on(ADD_NODE, addNode);
 ipcMain.on(DELETE_NODE, deleteNode);
@@ -299,6 +169,10 @@ ipcMain.on(IMPORT_NODES, importNodes);
 ipcMain.on(GET_CHAINS, getChains);
 ipcMain.on(GET_BLOCKS, getBlocks);
 ipcMain.on(GET_BLOCK, getBlock);
+ipcMain.on(SEARCH, search);
+ipcMain.on(GET_TRANSACTION, getTransaction);
+ipcMain.on(GET_COMMITTEES, getCommittees);
+ipcMain.on(GET_PENDING_TRANSACTIONS, getPendingTransactions);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -314,9 +188,8 @@ function createWindow() {
     },
   });
   mainWindow.loadURL(isDev
-    ? "http://localhost:3000"
-    : `file://${path.join(__dirname, "../build/index.html")}`
-  );
+    ? 'http://localhost:3000'
+    : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.focus();
 
   mainWindow.on('close', (e) => {
@@ -338,4 +211,6 @@ app.on('activate', () => mainWindow.show());
 
 /* 'before-quit' is emitted when Electron receives
  * the signal to exit and wants to start closing windows */
-app.on('before-quit', () => willQuitApp = true);
+app.on('before-quit', () => {
+  willQuitApp = true;
+});

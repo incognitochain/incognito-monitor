@@ -7,4 +7,8 @@ module.exports =  {
   GET_CHAINS: 'get-chains',
   GET_BLOCKS: 'get-blocks',
   GET_BLOCK: 'get-block',
+  SEARCH: 'search',
+  GET_TRANSACTION: 'get-transaction',
+  GET_COMMITTEES: 'get-committees',
+  GET_PENDING_TRANSACTIONS: 'get-pending-transactions',
 };

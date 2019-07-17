@@ -1,7 +1,7 @@
 import React from 'react';
 
 const RefreshContext = React.createContext({
-  autoRefresh: false,
+  autoRefresh: true,
   refreshTime: 5000,
 });
 

@@ -15,7 +15,7 @@ function Table({
   }
 
   const cellRenderer = (rowIndex, colIndex) => {
-    if (loading) {
+    if (loading || _.isEmpty(data)) {
       return <Cell />;
     }
 

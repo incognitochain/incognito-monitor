@@ -11,6 +11,9 @@ import Nodes from 'containers/Nodes';
 import Chains from 'containers/Chains';
 import Blocks from 'containers/Chain';
 import Block from 'containers/Block';
+import Transaction from 'containers/Transaction';
+import Committees from 'containers/Committees';
+import PendingTransactions from 'containers/PendingTransactions';
 import RefreshContext from 'components/Contexts/RefreshContext';
 import { getNodes } from 'containers/Nodes/actions';
 
@@ -80,8 +83,11 @@ class App extends Component {
           <div className="app-content">
             <Route exact path="/(.*index.html)?" component={Nodes} />
             <Route exact path="/nodes/:name([a-zA-Z0-9 _-]*)/" component={Chains} />
+            <Route exact path="/committees/:name([a-zA-Z0-9 _-]*)/" component={Committees} />
             <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/chains/:chainIndex" component={Blocks} />
             <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/blocks/:blockHash" component={Block} />
+            <Route exact path="/nodes/:nodeName([a-zA-Z0-9 _-]+)/transactions/:transactionHash" component={Transaction} />
+            <Route exact path="/pending-transactions/:name([a-zA-Z0-9 _-]*)" component={PendingTransactions} />
           </div>
         </RefreshContext.Provider>
       </div>

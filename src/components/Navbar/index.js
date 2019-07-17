@@ -24,10 +24,16 @@ function Navbar({
             || location.pathname.indexOf('index.html') > -1}
           activeClassName="is-active"
         >
-          <Button large className={Classes.MINIMAL} icon="database" text="Nodes" />
+          <Button large className={Classes.MINIMAL} text="Nodes" />
         </NavLink>
         <NavLink to="/nodes/" activeClassName="is-active">
-          <Button large className={Classes.MINIMAL} icon="code-block" text="Chains" />
+          <Button large className={Classes.MINIMAL} text="Chains" />
+        </NavLink>
+        <NavLink to="/committees/" activeClassName="is-active">
+          <Button large className={Classes.MINIMAL} text="Committees" />
+        </NavLink>
+        <NavLink to="/pending-transactions/" activeClassName="is-active">
+          <Button large className={Classes.MINIMAL} text="Pending TXs" />
         </NavLink>
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>

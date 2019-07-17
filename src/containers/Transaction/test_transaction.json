@@ -1,0 +1,23 @@
+{
+  "hash": "e2b89512cbc2140fdd2fad2c96df2bdb998c7fde56a5007b858f15c3ba43609f",
+  "confirmations": 97,
+  "version": 1,
+  "txRoot": "0000000000000000000000000000000000000000000000000000000000000000",
+  "time": 1562747724,
+  "previousBlockHash": "9061c6c166dabb9230449195de147a0fa6c026305b234efc42e2a068a087ad90",
+  "nextBlockHash": "b2c4643db0219208124cdfbc03fb843937c57e0fdd394bbdc85b6e26c43eff31",
+  "height": 661,
+  "producer": "0205aae74cb0128a1863c970cbe87e827e28f92a91c2d4768fdb30a279dd081c0003c4a32f4e0b2b5fff4f2ec4e1d7200df8858939d259ba31d70488488345ea6fd1",
+  "producerSign": "1BgWyqs6hUtEBNRU2rznmBEn7F6diGrbep8MzuvYNiMbA3oBhCCTp413wfgGJ4CymjqsvTjW8EL2SectcdiUXQjUhN6nkx",
+  "data": "",
+  "beaconHeight": 0,
+  "beaconBlockHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "aggregatedSig": "12dvfBZbG3JoPaDbCnNKkdypJCDdSz3mWnPG1eU8TRYTRgwPhJPGwrKyFRoAi2Pw32fRRCfLGQQqzYsuMux4Eo36yGbrgUR",
+  "r": "16ypAUMbQ2qYgy9uH9Pdxbum7UcuAQqJnD2DVPb1NPfQjtjNvcZ",
+  "round": 1,
+  "crossShards": [],
+  "epoch": 14,
+  "txs": null,
+  "fee": 0,
+  "reward": 0
+}

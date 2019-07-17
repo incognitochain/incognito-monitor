@@ -125,6 +125,12 @@ class ConstantNodeRPC {
    * shardId - number
    */
   GetShardBestState() {}
+
+  GetNodeRole() {}
+
+  CheckHashValue() {}
+
+  GetMempoolInfo() {}
 }
 
 // Implement virtual method

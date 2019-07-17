@@ -33,8 +33,11 @@ function refreshOnInterval(WrappedComponent) {
     };
 
     setRefreshAction = (action) => {
+      const { autoRefresh } = this.props;
       this.refreshAction = action;
-      this.startRefresh();
+      if (autoRefresh) {
+        this.startRefresh();
+      }
     };
 
     stopRefresh = () => {

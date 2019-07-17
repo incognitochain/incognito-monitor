@@ -41,9 +41,9 @@ function HealthPanel({
     editable: true,
     width: 80,
   }, {
-    key: 'type',
-    displayName: 'Type',
-    width: 80,
+    key: 'role',
+    displayName: 'Role',
+    width: 150,
   }, {
     key: 'status',
     displayName: 'Status',

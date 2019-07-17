@@ -1,0 +1,22 @@
+.transaction {
+  .cards {
+    > div {
+      border-radius: 0;
+    }
+
+    .title {
+      width: 30%;
+      font-weight: bold;
+    }
+
+    .value {
+      flex: 1;
+    }
+  }
+
+  .data-scrollable {
+    width: 100%;
+    height: 80px;
+    resize: none;
+  }
+}
