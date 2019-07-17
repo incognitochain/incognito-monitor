@@ -183,9 +183,9 @@ ipcMain.on(GET_PENDING_TRANSACTIONS, getPendingTransactions);
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
-    height: 720,
+    height: 600,
     minWidth: 800,
-    minHeight: 600,
+    minHeight: 200,
     autoHideMenuBar: true,
     useContentSize: true,
     resizable: true,
