@@ -36,6 +36,7 @@ async function getFullNodeInfo(node) {
   let totalShards;
   let epoch;
   let role;
+  let reward;
   try {
     await rpc.GetNetworkInfo();
     const beaconInfo = await rpc.GetBeaconBestState();
@@ -45,6 +46,7 @@ async function getFullNodeInfo(node) {
     totalBlocks = blocks.reduce((sum, numBlocks) => sum + numBlocks);
 
     const state = await rpc.GetBeaconBestState();
+    reward = await rpc.GetRewardAmount();
     beaconHeight = state.BeaconHeight;
     epoch = beaconInfo.Epoch;
 
@@ -63,6 +65,7 @@ async function getFullNodeInfo(node) {
     totalShards,
     epoch,
     role,
+    reward,
   };
 }
 

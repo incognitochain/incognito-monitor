@@ -35,7 +35,7 @@ function HealthPanel({
     key: 'host',
     displayName: 'Host',
     editable: true,
-    width: 200,
+    width: 180,
   }, {
     key: 'port',
     displayName: 'Port',
@@ -54,6 +54,7 @@ function HealthPanel({
     key: 'totalBlocks',
     displayName: 'Total Blocks',
     formatter: formatter.formatNumber,
+    width: 100,
   }, {
     key: 'beaconHeight',
     displayName: 'Beacon Height',
@@ -63,6 +64,10 @@ function HealthPanel({
     displayName: 'Epoch',
     width: 80,
     formatter: formatter.formatNumber,
+  }, {
+    key: 'reward',
+    displayName: 'Reward',
+    formatter: reward => _.map(reward, (value, key) => `${formatter.formatNumber(value)}${key}`).join(', '),
   }, {
     key: 'name',
     displayName: '',

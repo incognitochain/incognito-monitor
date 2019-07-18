@@ -133,6 +133,8 @@ class ConstantNodeRPC {
   GetMempoolInfo() {}
 
   ListPrivacyCustomToken() {}
+
+  GetRewardAmount() {}
 }
 
 // Implement virtual method
