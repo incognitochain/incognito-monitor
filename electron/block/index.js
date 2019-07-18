@@ -7,7 +7,7 @@ const { logger, formatter } = utils;
  * Get blocks of a shard
  * @param node
  * @param shardId
- * @returns {Promise<[Object]>}
+ * @returns {Promise<Object[]>}
  */
 async function getBlocks(node, shardId) {
   logger.verbose(`Getting blocks of shard ${shardId} of node ${node.host}`);
@@ -22,7 +22,7 @@ async function getBlocks(node, shardId) {
 /**
  * Get a block by hash
  * @param {Object} node
- * @param {String} blockHash
+ * @param {string} blockHash
  * @returns {Promise<{Object}>} block
  */
 async function getBlock(node, blockHash) {
@@ -55,8 +55,8 @@ async function getBlock(node, blockHash) {
 /**
  *
  * @param {Object} node
- * @param {Number} height height must be a number
- * @param {Number} shardId shardId must be a number
+ * @param {number} height height must be a number
+ * @param {number} shardId shardId must be a number
  * @returns {Promise<{Object}>}
  */
 async function getBlockByHeight(node, height, shardId) {

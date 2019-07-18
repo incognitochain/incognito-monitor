@@ -4,11 +4,12 @@ const utils = require('../utils');
 
 const { formatter, logger } = utils;
 
-function getTransactionByHash(host, port, searchValue) {
-  const rpc = new ConstantRPC(host, port);
-  return rpc.GetTransactionByHash(searchValue);
-}
-
+/**
+ * Get transaction by hash
+ * @param node
+ * @param transactionHash
+ * @returns {Promise<{Object}>}
+ */
 async function getTransaction(node, transactionHash) {
   logger.verbose(`Getting transaction ${transactionHash}`, node);
 
@@ -21,6 +22,11 @@ async function getTransaction(node, transactionHash) {
   return formattedTransaction;
 }
 
+/**
+ * Get pending transactions of a node
+ * @param {Object} node
+ * @returns {Promise<Object[]>}
+ */
 async function getPendingTransactions(node) {
   logger.verbose('Getting pending transactions', node);
 
@@ -44,6 +50,5 @@ async function getPendingTransactions(node) {
 
 module.exports = {
   getTransaction,
-  getTransactionByHash,
   getPendingTransactions,
 };

@@ -1,4 +1,16 @@
+const _ = require('lodash');
+
+/**
+ * Format block
+ * @param {Object} block
+ * @param {boolean} isBeaconBlock
+ * @returns {Object} formattedBlock
+ */
 function formatBlock(block, isBeaconBlock) {
+  if (_.isEmpty(block)) {
+    return {};
+  }
+
   return {
     hash: block.Hash,
     shardId: block.ShardId,
@@ -28,7 +40,16 @@ function formatBlock(block, isBeaconBlock) {
   };
 }
 
+/**
+ * Format transaction
+ * @param {Object} transaction
+ * @returns {Object}
+ */
 function formatTransaction(transaction) {
+  if (_.isEmpty(transaction)) {
+    return {};
+  }
+
   return {
     blockHash: transaction.BlockHash,
     blockHeight: transaction.BlockHeight,
@@ -54,7 +75,16 @@ function formatTransaction(transaction) {
   };
 }
 
+/**
+ * Format token
+ * @param {Object} token
+ * @returns {Object}
+ */
 function formatToken(token) {
+  if (_.isEmpty(token)) {
+    return {};
+  }
+
   return {
     amount: token.Amount,
     id: token.ID,

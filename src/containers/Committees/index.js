@@ -111,6 +111,26 @@ class Committees extends Component {
             ))}
           </Card>
         ))}
+        <Card className="p-10">
+          <h4>Beacon Pending Committees</h4>
+          {_.get(committees, 'beaconPendings', []).map((value, index) => (
+            <div key={value} className="flex cards">
+              <Card className="title p-10">#{index + 1}</Card>
+              <Card className="value text-overflow p-10">{value}</Card>
+            </div>
+          ))}
+        </Card>
+        {_.map(committees.shardPendings, (committee, shardIndex) => (
+          <Card className="p-10">
+            <h4>Shard Pending #{_.toInteger(shardIndex) + 1} Committees</h4>
+            {_.map(committee, (value, index) => (
+              <div key={value} className="flex cards">
+                <Card className="title p-10">#{index + 1}</Card>
+                <Card className="value text-overflow p-10">{value}</Card>
+              </div>
+            ))}
+          </Card>
+        ))}
       </div>
     );
   }

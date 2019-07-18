@@ -28,7 +28,7 @@ const blockController = require('./block');
 const transactionController = require('./transaction');
 const tokenController = require('./token');
 
-const { formatter, logger } = utils;
+const { logger } = utils;
 const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
 
 let mainWindow;
@@ -103,12 +103,11 @@ async function searchByHash(host, port, hash) {
       data: block,
     };
   } if (hashType.IsTransaction) {
-    const transaction = await transactionController.getTransactionByHash(host, port, hash) || {};
+    const transaction = await transactionController.getTransaction({ host, port }, hash) || {};
     if (!_.isEmpty(transaction)) {
-      const formattedTransaction = formatter.formatTransaction(transaction);
       return {
         type: 'transaction',
-        data: formattedTransaction,
+        data: transaction,
       };
     }
   }

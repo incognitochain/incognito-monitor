@@ -5,9 +5,8 @@ import { bindActionCreators } from 'redux';
 import {
   Button, Icon, Card,
 } from '@blueprintjs/core';
-import { Link } from 'react-router-dom';
-
 import Information from 'components/Information';
+import DataScrollable from 'components/DataScrollable';
 import { getTransaction } from './actions';
 import './index.scss';
 import MOCK_UP_TRANSACTION from './test_transaction.json';
@@ -104,19 +103,19 @@ class Transaction extends Component {
         value: isPrivacy ? 'true' : 'false',
       }, {
         title: 'Proof (base68ceheck encode)',
-        value: <textarea className="data-scrollable">{proof}</textarea>,
+        value: <DataScrollable data={proof} />,
       }, {
         title: 'Proof Detail',
-        value: <textarea className="data-scrollable">{JSON.stringify(proofDetail, null, 4)}</textarea>,
+        value: <DataScrollable data={proofDetail} />,
       }, {
         title: 'Metadata',
-        value: <textarea className="data-scrollable">{JSON.stringify(metadata, null, 4)}</textarea>,
+        value: <DataScrollable data={metadata} />,
       }, {
         title: 'Custom Token',
-        value: <textarea className="data-scrollable">{JSON.stringify(customTokenData, null, 4)}</textarea>,
+        value: <DataScrollable data={customTokenData} />,
       }, {
         title: 'Privacy Custom Token',
-        value: <textarea className="data-scrollable">{JSON.stringify(privacyCustomTokenData, null, 4)}</textarea>,
+        value: <DataScrollable data={privacyCustomTokenData} />,
       },
     ];
 

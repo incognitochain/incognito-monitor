@@ -5,7 +5,7 @@ const VALID_INT_NUMBER_REGEX = /^[0-9]+$/;
 export default {
   /**
    * Validate host
-   * @param {String} host
+   * @param {string} host
    */
   validateHost(host) {
     return VALID_IP_ADDRESS_REGEX.test(host) || VALID_HOST_NAME_REGEX.test(host);

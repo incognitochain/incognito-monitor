@@ -4,6 +4,11 @@ const ConstantRPC = require('../incognitoRpc');
 
 const { logger, timeout } = utils;
 
+/**
+ * Get chains of a node
+ * @param {Object} node
+ * @returns {Promise<Object[]>}
+ */
 async function getChains(node) {
   logger.verbose('Getting chains of', node);
   try {

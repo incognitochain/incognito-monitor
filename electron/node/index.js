@@ -20,7 +20,7 @@ function readNodes() {
 
 /**
  * Find a node in data by node name
- * @param {String} nodeName
+ * @param {string} nodeName
  * @returns {Object} node
  */
 function findNode(nodeName) {
@@ -28,6 +28,11 @@ function findNode(nodeName) {
   return nodes.find(item => item.name === nodeName);
 }
 
+/**
+ * Get node information
+ * @param {Object} node
+ * @returns {Promise<Object>} nodeInfo
+ */
 async function getFullNodeInfo(node) {
   const rpc = new ConstantRPC(node.host, node.port);
   let status = 'OFFLINE';
@@ -39,6 +44,7 @@ async function getFullNodeInfo(node) {
   let reward;
   try {
     await rpc.GetNetworkInfo();
+    status = 'ONLINE';
     const beaconInfo = await rpc.GetBeaconBestState();
     totalShards = beaconInfo.ActiveShards;
     const blocks = await Promise.all(_.range(-1, totalShards)
@@ -51,10 +57,8 @@ async function getFullNodeInfo(node) {
     epoch = beaconInfo.Epoch;
 
     role = await rpc.GetNodeRole();
-
-    status = 'ONLINE';
   } catch (error) {
-    logger.error(error.message);
+    logger.error('Get node information failed', { node, error });
   }
 
   return {
@@ -69,25 +73,11 @@ async function getFullNodeInfo(node) {
   };
 }
 
-async function getNodeCommittees(node) {
-  const nodeInfo = await getFullNodeInfo(node);
-  const rpc = new ConstantRPC(node.host, node.port);
-  const committees = {};
-  try {
-    await rpc.GetNetworkInfo();
-    const beaconInfo = await rpc.GetBeaconBestState();
-
-    committees.beacon = beaconInfo.BeaconCommittee;
-    committees.shards = beaconInfo.ShardCommittee;
-  } catch (error) {
-    logger.error(error.message);
-  }
-  return {
-    ...nodeInfo,
-    committees,
-  };
-}
-
+/**
+ * Get node information with timeout
+ * @param {Object} node
+ * @returns {Promise<Object>}
+ */
 function getNodeInfo(node) {
   return Promise.race([getFullNodeInfo(node), utils.timeout({
     ...node,
@@ -95,6 +85,11 @@ function getNodeInfo(node) {
   })]);
 }
 
+/**
+ * Add node to data file
+ * @param {Object} newNode
+ * @returns {Promise<Object>}
+ */
 async function addNode(newNode) {
   logger.verbose('Adding node', newNode);
 
@@ -114,6 +109,10 @@ async function addNode(newNode) {
   return fullNode;
 }
 
+/**
+ * Get nodes store in file
+ * @returns {Promise<Object[]>}
+ */
 async function getNodes() {
   logger.verbose('Getting nodes');
   if (fs.existsSync(dataPath)) {
@@ -138,6 +137,11 @@ async function getNodes() {
   });
 }
 
+/**
+ * Export to a file
+ * @param {string} savedFilePath
+ * @returns {Promise<string>}
+ */
 function exportNodes(savedFilePath) {
   if (savedFilePath) {
     return new Promise((resolve) => {
@@ -154,6 +158,11 @@ function exportNodes(savedFilePath) {
   return Promise.resolve('success');
 }
 
+/**
+ * Import nodes to data file from a file
+ * @param {string} filePath
+ * @returns {Promise<string>}
+ */
 function importNodes(filePath) {
   if (filePath && filePath.length) {
     return new Promise((resolve) => {
@@ -169,6 +178,11 @@ function importNodes(filePath) {
   return Promise.resolve('cancel');
 }
 
+/**
+ * Delete a node in data file return nodeName if success otherwise return null
+ * @param {string} nodeName
+ * @returns {null|*} deletedNodeName
+ */
 function deleteNode(nodeName) {
   logger.verbose('Deleting node ', nodeName);
 
@@ -188,14 +202,35 @@ function deleteNode(nodeName) {
   return nodeName;
 }
 
+/**
+ * Get committees of a node
+ * @param {string} nodeName
+ * @returns {Promise<Object>}
+ */
 async function getCommittees(nodeName) {
   logger.verbose(`Getting committees of node ${nodeName}`);
 
   const node = findNode(nodeName);
-  const nodeInfo = await getNodeCommittees(node);
+  const nodeInfo = await getFullNodeInfo(node);
+  const rpc = new ConstantRPC(node.host, node.port);
+  const committees = {};
+  try {
+    await rpc.GetNetworkInfo();
+    const beaconInfo = await rpc.GetBeaconBestState();
+
+    committees.beacon = beaconInfo.BeaconCommittee;
+    committees.shards = beaconInfo.ShardCommittee;
+    committees.beaconPendings = beaconInfo.BeaconPendingValidator;
+    committees.shardPendings = beaconInfo.ShardPendingValidator;
+  } catch (error) {
+    logger.error(error.message);
+  }
 
   logger.verbose(`Getting committees of node ${nodeName} success`, nodeInfo);
-  return nodeInfo;
+  return {
+    ...nodeInfo,
+    committees,
+  };
 }
 
 module.exports = {

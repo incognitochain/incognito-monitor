@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 
 import Information from 'components/Information';
 import BackButton from 'components/BackButton';
+import DataScrollable from 'components/DataScrollable';
 import formatter from 'utils/formatter';
 
 import { getBlock } from './actions';
@@ -65,6 +66,7 @@ class Block extends Component {
       fee,
       reward,
       isBeaconBlock,
+      instructions,
     } = block;
 
     const fields = [
@@ -140,8 +142,8 @@ class Block extends Component {
         title: 'Reward',
         value: reward,
       }, {
-        title: 'TXs',
-        value: _.get(txHashes, 'length') || 0,
+        title: isBeaconBlock ? 'Instructions' : 'TXs',
+        value: isBeaconBlock ? <DataScrollable data={instructions} /> : _.get(txHashes, 'length') || 0,
       },
     ];
 
