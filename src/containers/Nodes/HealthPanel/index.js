@@ -8,6 +8,7 @@ import {
 
 import Table from 'components/common/Table';
 import NewNodeDialog from 'components/NewNodeDialog';
+import formatter from 'utils/formatter';
 
 import './index.scss';
 
@@ -52,13 +53,16 @@ function HealthPanel({
   }, {
     key: 'totalBlocks',
     displayName: 'Total Blocks',
+    formatter: formatter.formatNumber,
   }, {
     key: 'beaconHeight',
     displayName: 'Beacon Height',
+    formatter: formatter.formatNumber,
   }, {
     key: 'epoch',
     displayName: 'Epoch',
     width: 80,
+    formatter: formatter.formatNumber,
   }, {
     key: 'name',
     displayName: '',

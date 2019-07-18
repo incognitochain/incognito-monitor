@@ -96,9 +96,6 @@ class PendingTransactions extends Component {
         title: 'Port',
         value: node.port,
       }, {
-        title: 'Total blocks',
-        value: node.totalBlocks,
-      }, {
         title: 'Status',
         value: node.status,
       },
@@ -136,7 +133,6 @@ PendingTransactions.propTypes = {
     host: PropTypes.string,
     port: PropTypes.string,
     status: PropTypes.string,
-    totalBlocks: PropTypes.number,
     transactions: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired,
   gettingPendingTransactions: PropTypes.bool.isRequired,

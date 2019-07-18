@@ -13,6 +13,8 @@ import Information from 'components/Information';
 import refreshOnInterval from 'components/HOC/refreshOnInterval';
 import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
 import NodeSelect from 'components/NodeSelect';
+import formatter from 'utils/formatter';
+
 import { getChains, search } from './actions';
 import './index.scss';
 
@@ -154,12 +156,15 @@ class Chains extends Component {
       }, {
         key: 'height',
         displayName: 'Height',
+        formatter: formatter.formatNumber,
       }, {
         key: 'totalTxs',
         displayName: 'Total Txs',
+        formatter: formatter.formatNumber,
       }, {
         key: 'epoch',
         displayName: 'Epoch',
+        formatter: formatter.formatNumber,
       },
     ];
 
@@ -175,7 +180,7 @@ class Chains extends Component {
         value: node.port,
       }, {
         title: 'Total blocks',
-        value: node.totalBlocks,
+        value: formatter.formatNumber(node.totalBlocks),
       }, {
         title: 'Status',
         value: node.status,

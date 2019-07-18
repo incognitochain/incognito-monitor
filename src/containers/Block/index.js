@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 
 import Information from 'components/Information';
 import BackButton from 'components/BackButton';
+import formatter from 'utils/formatter';
 
 import { getBlock } from './actions';
 import './index.scss';
@@ -80,7 +81,7 @@ class Block extends Component {
     const blockFields = [
       {
         title: 'Block height',
-        value: height,
+        value: formatter.formatNumber(height),
       }, {
         title: 'Version',
         value: version,
@@ -101,7 +102,7 @@ class Block extends Component {
         value: round,
       }, {
         title: 'Epoch',
-        value: epoch,
+        value: formatter.formatNumber(epoch),
       }, {
         title: 'Crosses Shards',
         value: crossShards,
@@ -128,7 +129,7 @@ class Block extends Component {
         value: aggregatedSig,
       }, {
         title: 'Beacon height',
-        value: beaconHeight,
+        value: formatter.formatNumber(beaconHeight),
       }, {
         title: 'Beacon block hash',
         value: beaconBlockHash,

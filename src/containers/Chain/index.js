@@ -11,6 +11,7 @@ import Information from 'components/Information';
 import refreshOnInterval from 'components/HOC/refreshOnInterval';
 import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
 import BackButton from 'components/BackButton';
+import formatter from 'utils/formatter';
 
 import { getChain } from './actions';
 import './index.scss';
@@ -39,6 +40,7 @@ class Chain extends Component {
       {
         key: 'height',
         displayName: 'Block',
+        formatter: formatter.formatNumber,
       }, {
         key: 'hash',
         displayName: 'Hash',
@@ -78,7 +80,7 @@ class Chain extends Component {
         value: producer,
       }, {
         title: 'Total Blocks',
-        value: totalBlocks,
+        value: formatter.formatNumber(totalBlocks),
       },
     ];
 

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Card } from '@blueprintjs/core';
@@ -9,6 +8,7 @@ import { Card } from '@blueprintjs/core';
 import Information from 'components/Information';
 import NodeSelect from 'components/NodeSelect';
 import Table from 'components/common/Table';
+import formatter from 'utils/formatter';
 
 import { getTokens } from './actions';
 import './index.scss';
@@ -88,7 +88,7 @@ class Tokens extends Component {
       }, {
         key: 'amount',
         displayName: 'Amount',
-        formatter: value => value.toLocaleString(),
+        formatter: formatter.formatNumber,
       }, {
         key: 'txs',
         displayName: 'Txs',

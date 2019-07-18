@@ -7,6 +7,7 @@ import { Card } from '@blueprintjs/core';
 
 import Information from 'components/Information';
 import NodeSelect from 'components/NodeSelect';
+import formatter from 'utils/formatter';
 
 import { getCommittees } from './actions';
 import './index.scss';
@@ -74,14 +75,11 @@ class Committees extends Component {
         title: 'Port',
         value: node.port,
       }, {
-        title: 'Total blocks',
-        value: node.totalBlocks,
-      }, {
         title: 'Status',
         value: node.status,
       }, {
         title: 'Epoch',
-        value: node.epoch,
+        value: formatter.formatNumber(node.epoch),
       },
     ];
 
@@ -129,7 +127,6 @@ Committees.propTypes = {
     host: PropTypes.string,
     port: PropTypes.string,
     status: PropTypes.string,
-    totalBlocks: PropTypes.number,
     committees: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired,
   gettingCommittees: PropTypes.bool.isRequired,
