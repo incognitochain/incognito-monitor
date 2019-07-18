@@ -35,6 +35,9 @@ function Navbar({
         <NavLink to="/pending-transactions/" activeClassName="is-active">
           <Button large className={Classes.MINIMAL} text="Pending TXs" />
         </NavLink>
+        <NavLink to="/tokens/" activeClassName="is-active">
+          <Button large className={Classes.MINIMAL} text="Tokens" />
+        </NavLink>
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
         <FormGroup

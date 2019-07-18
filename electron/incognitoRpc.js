@@ -131,6 +131,8 @@ class ConstantNodeRPC {
   CheckHashValue() {}
 
   GetMempoolInfo() {}
+
+  ListPrivacyCustomToken() {}
 }
 
 // Implement virtual method

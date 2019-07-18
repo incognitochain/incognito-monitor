@@ -51,10 +51,23 @@ function formatTransaction(transaction) {
     privacyCustomTokenData: transaction.PrivacyCustomTokenData,
     isInMempool: transaction.IsInMempool,
     isInBlock: transaction.IsInBlock,
-  }
+  };
+}
+
+function formatToken(token) {
+  return {
+    amount: token.Amount,
+    id: token.ID,
+    image: token.Image,
+    isPrivacy: token.IsPrivacy,
+    txs: token.ListTxs,
+    name: token.Name,
+    symbol: token.Symbol,
+  };
 }
 
 module.exports = {
   formatTransaction,
-  formatBlock
+  formatBlock,
+  formatToken,
 };

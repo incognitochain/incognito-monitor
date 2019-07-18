@@ -19,12 +19,14 @@ const {
   GET_TRANSACTION,
   GET_COMMITTEES,
   GET_PENDING_TRANSACTIONS,
+  GET_TOKENS,
 } = require('./events');
 const utils = require('./utils');
 const nodeController = require('./node');
 const chainController = require('./chain');
 const blockController = require('./block');
 const transactionController = require('./transaction');
+const tokenController = require('./token');
 
 const { formatter, logger } = utils;
 const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
@@ -167,6 +169,16 @@ async function getPendingTransactions(event, nodeName) {
   event.reply(GET_PENDING_TRANSACTIONS, nodeInfo);
 }
 
+async function getTokens(event, nodeName) {
+  const node = nodeController.findNode(nodeName);
+  const tokens = await tokenController.getTokens(node);
+
+  const nodeInfo = await nodeController.getNodeInfo(node);
+  nodeInfo.tokens = tokens;
+
+  event.reply(GET_TOKENS, nodeInfo);
+}
+
 ipcMain.on(ADD_NODE, addNode);
 ipcMain.on(DELETE_NODE, deleteNode);
 ipcMain.on(GET_NODES, getNodes);
@@ -179,6 +191,7 @@ ipcMain.on(SEARCH, search);
 ipcMain.on(GET_TRANSACTION, getTransaction);
 ipcMain.on(GET_COMMITTEES, getCommittees);
 ipcMain.on(GET_PENDING_TRANSACTIONS, getPendingTransactions);
+ipcMain.on(GET_TOKENS, getTokens);
 
 function createWindow() {
   mainWindow = new BrowserWindow({

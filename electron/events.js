@@ -11,4 +11,5 @@ module.exports =  {
   GET_TRANSACTION: 'get-transaction',
   GET_COMMITTEES: 'get-committees',
   GET_PENDING_TRANSACTIONS: 'get-pending-transactions',
+  GET_TOKENS: 'get-tokens',
 };

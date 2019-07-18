@@ -8,7 +8,7 @@ import {
 import './index.scss';
 
 function Table({
-  data, columns, loading, skeletonHeight,
+  data, columns, loading, skeletonHeight, defaultRowHeight,
 }) {
   if (!data || !columns) {
     return null;
@@ -42,6 +42,7 @@ function Table({
       loadingOptions={loadingOptions}
       selectionModes={SelectionModes.NONE}
       columnWidths={columnWidths}
+      defaultRowHeight={defaultRowHeight}
     >
       {columns.map(({ key, displayName }) => (
         <Column
@@ -70,11 +71,13 @@ Table.propTypes = {
   })).isRequired,
   loading: PropTypes.bool,
   skeletonHeight: PropTypes.number,
+  defaultRowHeight: PropTypes.number,
 };
 
 Table.defaultProps = {
   loading: false,
   skeletonHeight: 10,
+  defaultRowHeight: undefined,
 };
 
 export default React.memo(Table);

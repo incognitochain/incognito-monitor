@@ -1,0 +1,3 @@
+export const GET_TOKENS = 'GET_TOKENS';
+export const GET_TOKENS_SUCCESS = 'GET_TOKENS_SUCCESS';
+export const GET_TOKENS_FAILED = 'GET_TOKENS_FAILED';
