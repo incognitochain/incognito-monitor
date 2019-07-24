@@ -32,7 +32,6 @@ const { logger } = utils;
 const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
 
 let mainWindow;
-let willQuitApp = false;
 
 async function addNode(event, newNode) {
   const result = await nodeController.addNode(newNode);
@@ -210,25 +209,30 @@ function createWindow() {
     : `file://${path.join(__dirname, '../build/index.html')}`);
   mainWindow.focus();
 
-  mainWindow.on('close', (e) => {
-    if (willQuitApp) {
-      /* the user tried to quit the app */
-      mainWindow = null;
-    } else {
-      /* the user only tried to close the window */
-      e.preventDefault();
-      mainWindow.hide();
-    }
+  // Emitted when the window is closed.
+  mainWindow.on('closed', () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
   });
 }
 
 app.on('ready', createWindow);
 
-/* 'activate' is emitted when the user clicks the Dock icon (OS X) */
-app.on('activate', () => mainWindow.show());
 
-/* 'before-quit' is emitted when Electron receives
- * the signal to exit and wants to start closing windows */
-app.on('before-quit', () => {
-  willQuitApp = true;
+app.on('window-all-closed', () => {
+  // On OS X it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow();
+  }
 });
