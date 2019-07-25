@@ -57,26 +57,26 @@ async function importNodes(event) {
   event.returnValue = await nodeController.importNodes(filePath);
 }
 
-async function deleteNode(event, nodeName) {
-  const result = await nodeController.deleteNode(nodeName);
+async function deleteNode(event, nodeId) {
+  const result = await nodeController.deleteNode(nodeId);
   event.reply(DELETE_NODE, result);
 }
 
-async function getChains(event, nodeName) {
-  const node = nodeController.findNode(nodeName);
+async function getChains(event, nodeId) {
+  const node = nodeController.findNode(nodeId);
   const nodeInfo = await nodeController.getNodeInfo(node);
 
   nodeInfo.chains = await chainController.getChains(node);
   event.reply(GET_CHAINS, nodeInfo);
 }
 
-async function getBlocks(event, { nodeName, shardId }) {
-  const node = nodeController.findNode(nodeName);
+async function getBlocks(event, { nodeId, shardId }) {
+  const node = nodeController.findNode(nodeId);
   const formattedBlocks = await blockController.getBlocks(node, shardId);
 
   const latestBlock = formattedBlocks[0];
   const chain = {
-    name: shardId === -1 ? 'Beacon' : `Shard ${shardId + 1}`,
+    name: shardId === -1 ? 'Beacon' : `Shard ${parseInt(shardId) + 1}`,
     totalBlocks: latestBlock.height,
     producer: latestBlock.producer,
     blocks: formattedBlocks,
@@ -85,8 +85,8 @@ async function getBlocks(event, { nodeName, shardId }) {
   event.reply(GET_BLOCKS, chain);
 }
 
-async function getBlock(event, { nodeName, blockHash }) {
-  const node = nodeController.findNode(nodeName);
+async function getBlock(event, { nodeId, blockHash }) {
+  const node = nodeController.findNode(nodeId);
   const formattedBlock = await blockController.getBlock(node, blockHash);
   event.reply(GET_BLOCK, formattedBlock);
 }
@@ -114,10 +114,10 @@ async function searchByHash(host, port, hash) {
   return null;
 }
 
-async function search(event, { nodeName, searchValue }) {
-  logger.verbose(`Search ${searchValue} in ${nodeName}`);
+async function search(event, { nodeId, searchValue }) {
+  logger.verbose(`Search ${searchValue} in ${nodeId}`);
   try {
-    const node = nodeController.findNode(nodeName);
+    const node = nodeController.findNode(nodeId);
     let result;
     if (SHARD_BLOCK_HEIGHT_REGEX.test(searchValue)) {
       const shardId = _.toInteger(searchValue.split(':')[0]);
@@ -135,30 +135,30 @@ async function search(event, { nodeName, searchValue }) {
 
     if (result) {
       event.reply(SEARCH, result);
-      logger.verbose(`Search ${searchValue} in ${nodeName} success`, result);
+      logger.verbose(`Search ${searchValue} in ${nodeId} success`, result);
     } else {
       event.reply(SEARCH, null);
-      logger.verbose(`Search ${searchValue} in ${nodeName} Not found`);
+      logger.verbose(`Search ${searchValue} in ${nodeId} Not found`);
     }
   } catch (error) {
     event.reply(SEARCH, null);
-    logger.error(`Search ${searchValue} in ${nodeName} ${error.message}`);
+    logger.error(`Search ${searchValue} in ${nodeId} ${error.message}`);
   }
 }
 
-async function getTransaction(event, { nodeName, transactionHash }) {
-  const node = nodeController.findNode(nodeName);
+async function getTransaction(event, { nodeId, transactionHash }) {
+  const node = nodeController.findNode(nodeId);
   const transaction = await transactionController.getTransaction(node, transactionHash);
   event.reply(GET_TRANSACTION, transaction);
 }
 
-async function getCommittees(event, nodeName) {
-  const result = await nodeController.getCommittees(nodeName);
+async function getCommittees(event, nodeId) {
+  const result = await nodeController.getCommittees(nodeId);
   event.reply(GET_COMMITTEES, result);
 }
 
-async function getPendingTransactions(event, nodeName) {
-  const node = nodeController.findNode(nodeName);
+async function getPendingTransactions(event, nodeId) {
+  const node = nodeController.findNode(nodeId);
   const transactions = await transactionController.getPendingTransactions(node);
 
   const nodeInfo = await nodeController.getNodeInfo(node);
@@ -167,8 +167,8 @@ async function getPendingTransactions(event, nodeName) {
   event.reply(GET_PENDING_TRANSACTIONS, nodeInfo);
 }
 
-async function getTokens(event, nodeName) {
-  const node = nodeController.findNode(nodeName);
+async function getTokens(event, nodeId) {
+  const node = nodeController.findNode(nodeId);
   const tokens = await tokenController.getTokens(node);
 
   const nodeInfo = await nodeController.getNodeInfo(node);

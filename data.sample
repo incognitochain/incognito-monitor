@@ -1,13 +1,13 @@
 [
     {
         "host": "127.0.0.1",
-        "id": "",
+        "id": "b85d45d1-df65-4cdb-8d15-78a07d55dbb8",
         "name": "Local",
         "port": "9334"
     },
     {
         "host": "test-node.incognito.org",
-        "id": "",
+        "id": "56fe7ebb-2506-4700-8758-939213517088",
         "name": "Full",
         "port": "9334"
     }

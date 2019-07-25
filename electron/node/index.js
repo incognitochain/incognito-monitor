@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const os = require('os');
+const uuid = require('uuid').v4;
 
 const ConstantRPC = require('../incognitoRpc');
 const utils = require('../utils');
@@ -15,17 +16,36 @@ const sampleDataPath = path.join(__dirname, '../../data.sample');
 
 function readNodes() {
   const nodesInString = fs.readFileSync(dataPath) || '[]';
-  return JSON.parse(nodesInString);
+  const nodes = JSON.parse(nodesInString);
+  let missingId = false;
+
+  const addedIdNodes = nodes.map(node => {
+    if (_.isEmpty(node.id)) {
+      missingId = true;
+      return {
+        ...node,
+        id: uuid(),
+      };
+    }
+
+    return node;
+  });
+
+  if (missingId) {
+    fs.writeFileSync(dataPath, JSON.stringify(addedIdNodes, null, 4));
+  }
+
+  return addedIdNodes;
 }
 
 /**
  * Find a node in data by node name
- * @param {string} nodeName
+ * @param {string} nodeId
  * @returns {Object} node
  */
-function findNode(nodeName) {
+function findNode(nodeId) {
   const nodes = readNodes();
-  return nodes.find(item => item.name === nodeName);
+  return nodes.find(item => item.id === nodeId);
 }
 
 /**
@@ -34,7 +54,6 @@ function findNode(nodeName) {
  * @returns {Promise<Object>} nodeInfo
  */
 async function getFullNodeInfo(node) {
-  const rpc = new ConstantRPC(node.host, node.port);
   let status = 'OFFLINE';
   let totalBlocks;
   let beaconHeight;
@@ -43,6 +62,7 @@ async function getFullNodeInfo(node) {
   let role;
   let reward;
   try {
+    const rpc = new ConstantRPC(node.host, node.port);
     await rpc.GetNetworkInfo();
     status = 'ONLINE';
     const beaconInfo = await rpc.GetBeaconBestState();
@@ -91,6 +111,7 @@ function getNodeInfo(node) {
  * @returns {Promise<Object>}
  */
 async function addNode(newNode) {
+  newNode.id = uuid();
   logger.verbose('Adding node', newNode);
 
   const nodes = readNodes();
@@ -179,15 +200,15 @@ function importNodes(filePath) {
 }
 
 /**
- * Delete a node in data file return nodeName if success otherwise return null
- * @param {string} nodeName
+ * Delete a node in data file return nodeId if success otherwise return null
+ * @param {string} nodeId
  * @returns {null|*} deletedNodeName
  */
-function deleteNode(nodeName) {
-  logger.verbose('Deleting node ', nodeName);
+function deleteNode(nodeId) {
+  logger.verbose('Deleting node ', nodeId);
 
   const nodes = readNodes();
-  const newNodes = nodes.filter(node => node.name !== nodeName);
+  const newNodes = nodes.filter(node => node.id !== nodeId);
 
   const err = fs.writeFileSync(dataPath, JSON.stringify(newNodes, null, 4));
 
@@ -197,20 +218,20 @@ function deleteNode(nodeName) {
     return null;
   }
 
-  logger.verbose('Delete node success', nodeName);
+  logger.verbose('Delete node success', nodeId);
 
-  return nodeName;
+  return nodeId;
 }
 
 /**
  * Get committees of a node
- * @param {string} nodeName
+ * @param {string} nodeId
  * @returns {Promise<Object>}
  */
-async function getCommittees(nodeName) {
-  logger.verbose(`Getting committees of node ${nodeName}`);
+async function getCommittees(nodeId) {
+  logger.verbose(`Getting committees of node ${nodeId}`);
 
-  const node = findNode(nodeName);
+  const node = findNode(nodeId);
   const nodeInfo = await getFullNodeInfo(node);
   const rpc = new ConstantRPC(node.host, node.port);
   const committees = {};
@@ -226,7 +247,7 @@ async function getCommittees(nodeName) {
     logger.error(error.message);
   }
 
-  logger.verbose(`Getting committees of node ${nodeName} success`, nodeInfo);
+  logger.verbose(`Getting committees of node ${nodeId} success`, nodeInfo);
   return {
     ...nodeInfo,
     committees,
