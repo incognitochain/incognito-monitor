@@ -42,28 +42,30 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
-module.exports = {
-  info(message, data) {
+function log(level, message, data) {
+  try {
     logger.log({
-      level: 'info',
+      level,
       message,
       data,
     });
+  } catch (error) {
+    if (!fs.existsSync((LOG_FOLDER_PATH))) {
+      fs.mkdirSync(LOG_FOLDER_PATH);
+    }
+  }
+}
+
+module.exports = {
+  info(message, data) {
+    log('info', message, data);
   },
 
   verbose(message, data) {
-    logger.log({
-      level: 'verbose',
-      message,
-      data,
-    });
+    log('verbose', message, data);
   },
 
   error(message, data) {
-    logger.log({
-      level: 'error',
-      message,
-      data,
-    });
+    log('error', message, data);
   },
 };

@@ -42,7 +42,7 @@ class App extends Component<Props, State> {
     super(props);
 
     this.state = {
-      autoRefresh: false,
+      autoRefresh: true,
       refreshTime: '5000',
       firstTimeLoaded: false,
     };
