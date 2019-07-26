@@ -134,7 +134,9 @@ class ConstantNodeRPC {
 
   ListPrivacyCustomToken() {}
 
-  GetRewardAmount() {}
+  GetRewardAmount(data = "") {}
+
+  ListRewardAmount() {}
 }
 
 // Implement virtual method
