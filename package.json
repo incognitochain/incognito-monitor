@@ -5,10 +5,10 @@
     "name": "Incognito",
     "email": "incognito@autonomous.nyc"
   },
-  "version": "0.7.2",
+  "version": "0.8.1",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/incognitochain/incognito-monitor.git"
+    "type": "git",
+    "url": "https://github.com/incognitochain/incognito-monitor.git"
   },
   "main": "./electron/build.js",
   "build": {
@@ -27,19 +27,26 @@
       "!node_modules/**/*",
       "build/**/*",
       "data.sample",
-      "electron/build.js"
+      "electron/build.js",
+      "electron/update.html"
     ],
     "extraResources": [
       {
         "from": "./data.sample",
         "to": "./data.sample"
+      },
+      {
+        "from": "./update.html",
+        "to": "./update.html"
       }
     ],
-    "publish": [{
-      "provider": "github",
-      "owner": "incognito",
-      "repo": "incognitochain/incognito-monitor"
-    }]
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "incognitochain",
+        "repo": "incognito-monitor"
+      }
+    ]
   },
   "homepage": "./",
   "dependencies": {
@@ -215,6 +222,7 @@
     "url-loader": "1.1.2",
     "wait-on": "^3.2.0",
     "webpack": "4.29.6",
+    "webpack-cli": "^3.3.6",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "4.2.0"

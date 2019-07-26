@@ -72,7 +72,12 @@ async function getFullNodeInfo(node) {
     totalBlocks = blocks.reduce((sum, numBlocks) => sum + numBlocks);
 
     const state = await rpc.GetBeaconBestState();
-    reward = await rpc.GetRewardAmount("");
+    reward = await rpc.GetRewardAmount("") || {};
+
+    Object.keys(reward).forEach(key => {
+      reward[key] = reward[key] / 1e9;
+    });
+
     beaconHeight = state.BeaconHeight;
     epoch = beaconInfo.Epoch;
 

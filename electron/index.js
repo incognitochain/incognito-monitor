@@ -5,6 +5,7 @@ const {
 const path = require('path');
 const _ = require('lodash');
 const isDev = require('electron-is-dev');
+const updater = require('./updater');
 const ConstantRPC = require('./incognitoRpc');
 const {
   ADD_NODE,
@@ -28,6 +29,7 @@ const blockController = require('./block');
 const transactionController = require('./transaction');
 const tokenController = require('./token');
 
+const appUpdater = updater(app);
 const { logger } = utils;
 const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
 
@@ -218,8 +220,10 @@ function createWindow() {
   });
 }
 
-app.on('ready', createWindow);
-
+app.on('ready', () => {
+  appUpdater.checkForUpdatesAndNotify();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
@@ -236,3 +240,4 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
