@@ -40,7 +40,7 @@ async function addNode(event, newNode) {
 
 async function getNodes(event) {
   const result = await nodeController.getNodes();
-  event.reply(GET_NODES, result);
+  event.reply(GET_NODES, result, '');
 }
 
 async function exportNodes(event) {
@@ -67,7 +67,7 @@ async function getChains(event, nodeId) {
   const nodeInfo = await nodeController.getNodeInfo(node);
 
   nodeInfo.chains = await chainController.getChains(node);
-  event.reply(GET_CHAINS, nodeInfo);
+  event.reply(GET_CHAINS, nodeInfo, nodeId);
 }
 
 async function getBlocks(event, { nodeId, shardId }) {

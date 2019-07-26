@@ -19,9 +19,6 @@ actions[GET_CHAIN_SUCCESS] = (state: any, action: any) => state
   .set('gettingChain', false)
   .set('chain', action.payload);
 
-actions[GET_CHAIN_FAILED] = (state: any) => state
-  .set('gettingChain', false);
-
 export default function (state = initialState, action: any) {
   const fn = actions[action.type];
 

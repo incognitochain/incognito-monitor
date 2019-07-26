@@ -40,6 +40,7 @@
     "@blueprintjs/table": "^3.6.0",
     "@types/redux-logger": "^3.0.7",
     "@types/redux-promise": "^0.5.28",
+    "@types/uuid": "^3.4.5",
     "electron-is-dev": "^1.1.0",
     "immutable": "^4.0.0-rc.12",
     "jayson": "^3.0.2",
