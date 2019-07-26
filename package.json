@@ -6,7 +6,10 @@
     "email": "incognito@autonomous.nyc"
   },
   "version": "0.7.2",
-  "private": true,
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/incognitochain/incognito-monitor.git"
+  },
   "main": "./electron/build.js",
   "build": {
     "appId": "incognito.monitoor",
@@ -31,7 +34,12 @@
         "from": "./data.sample",
         "to": "./data.sample"
       }
-    ]
+    ],
+    "publish": [{
+      "provider": "github",
+      "owner": "incognito",
+      "repo": "incognitochain/incognito-monitor"
+    }]
   },
   "homepage": "./",
   "dependencies": {
@@ -68,6 +76,7 @@
     "package": "rm -rf dist/ && electron-builder -mwl",
     "release": "yarn build-react && electron-builder --publish=always",
     "build": "yarn build-electron && yarn build-react && yarn package",
+    "publish": "build -mwl -p always",
     "start": "concurrently \"cross-env BROWSER=none yarn start-react\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {
@@ -167,6 +176,8 @@
     "dotenv-expand": "4.2.0",
     "electron": "^5.0.6",
     "electron-builder": "^20.44.4",
+    "electron-log": "^3.0.6",
+    "electron-updater": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-config-react-app": "^4.0.1",
     "eslint-loader": "2.1.2",
