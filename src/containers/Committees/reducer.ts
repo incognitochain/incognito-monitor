@@ -17,7 +17,7 @@ actions[GET_COMITEES] = (state: any, action: any) => state
 
 actions[GET_COMITEES_SUCCESS] = (state: any, action: any) => state
   .set('gettingCommittees', false)
-  .set('node.ts.tsx', action.payload);
+  .set('node', action.payload);
 
 actions[GET_COMITEES_FAILED] = (state: any) => state
   .set('gettingCommittees', false);

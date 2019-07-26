@@ -19,7 +19,7 @@ export const getNodes = (background = false) => (dispatch: any) => {
     background,
   });
 
-  electron.send('get-nodes', '', TEST_NODES)
+  return electron.send('get-nodes', '', TEST_NODES)
     .then((payload) => {
       dispatch({
         type: GET_NODES_SUCCESS,
@@ -39,7 +39,7 @@ export const addNode = (node: any) => (dispatch: any) => {
     type: ADD_NODE,
   });
 
-  electron.send('add-node', node, {})
+  return electron.send('add-node', node, {})
     .then((payload) => {
       electron.removeListener('get-nodes');
       dispatch({
@@ -60,7 +60,7 @@ export const deleteNode = (nodeId: string) => (dispatch: any) => {
     type: DELETE_NODE,
   });
 
-  electron.send('delete-node', nodeId, {})
+  return electron.send('delete-node', nodeId, {})
     .then((payload) => {
       electron.removeListener('get-nodes');
       dispatch({

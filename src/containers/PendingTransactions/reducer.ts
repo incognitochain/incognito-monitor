@@ -17,7 +17,7 @@ actions[GET_PENDING_TRANSACTIONS] = (state: any, action: any) => state
 
 actions[GET_PENDING_TRANSACTIONS_SUCCESS] = (state: any, action: any) => state
   .set('gettingPendingTransactions', false)
-  .set('node.ts.tsx', action.payload);
+  .set('.params.nodeId.tsx', action.payload);
 
 actions[GET_PENDING_TRANSACTIONS_FAILED] = (state: any) => state
   .set('gettingPendingTransactions', false);

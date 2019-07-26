@@ -12,7 +12,7 @@ export const getPendingTransactions = (nodeId: string, background: boolean = fal
     background,
   });
 
-  electron.send('get-pending-transactions', nodeId, TEST_NODE)
+  return electron.send('get-pending-transactions', nodeId, TEST_NODE)
     .then((payload) => {
       dispatch({
         type: GET_PENDING_TRANSACTIONS_SUCCESS,

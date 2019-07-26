@@ -1,6 +1,5 @@
 const {
   app, BrowserWindow, ipcMain, dialog,
-  // eslint-disable-next-line import/no-extraneous-dependencies
 } = require('electron');
 const path = require('path');
 const _ = require('lodash');
@@ -21,6 +20,7 @@ const {
   GET_COMMITTEES,
   GET_PENDING_TRANSACTIONS,
   GET_TOKENS,
+  CALL_RPC,
 } = require('./events');
 const utils = require('./utils');
 const nodeController = require('./node');
@@ -29,7 +29,7 @@ const blockController = require('./block');
 const transactionController = require('./transaction');
 const tokenController = require('./token');
 
-const appUpdater = updater(app);
+const appUpdater = updater(ipcMain);
 const { logger } = utils;
 const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
 
@@ -179,6 +179,19 @@ async function getTokens(event, nodeId) {
   event.reply(GET_TOKENS, nodeInfo);
 }
 
+async function callRPC(event, { nodeId, method, params }) {
+  try {
+    const node = nodeController.findNode(nodeId);
+    const rpc = new ConstantRPC(node.host, node.port);
+
+    const result = await rpc.call(method, JSON.parse(params));
+
+    event.returnValue = result;
+  } catch (error) {
+    event.returnValue = error;
+  }
+}
+
 ipcMain.on(ADD_NODE, addNode);
 ipcMain.on(DELETE_NODE, deleteNode);
 ipcMain.on(GET_NODES, getNodes);
@@ -192,6 +205,7 @@ ipcMain.on(GET_TRANSACTION, getTransaction);
 ipcMain.on(GET_COMMITTEES, getCommittees);
 ipcMain.on(GET_PENDING_TRANSACTIONS, getPendingTransactions);
 ipcMain.on(GET_TOKENS, getTokens);
+ipcMain.on(CALL_RPC, callRPC);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -221,8 +235,8 @@ function createWindow() {
 }
 
 app.on('ready', () => {
-  appUpdater.checkForUpdatesAndNotify();
   createWindow();
+  // appUpdater.checkForUpdates();
 });
 
 app.on('window-all-closed', () => {

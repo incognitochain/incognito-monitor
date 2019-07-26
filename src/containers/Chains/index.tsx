@@ -8,14 +8,13 @@ import {
 import { Link } from 'react-router-dom';
 
 import Table from 'components/common/Table';
-import Information from 'components/Information';
 import refreshOnInterval from 'components/HOC/refreshOnInterval';
 import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
-import NodeSelect from 'components/NodeSelect';
 import formatter from 'utils/formatter';
 
 import { getChains, search } from 'containers/Chains/actions';
 import './index.scss';
+import NodeInformation from 'components/NodeInformation';
 
 const MOCK_UP_NODE = {
   name: '',
@@ -133,17 +132,8 @@ class Chains extends Component<Props> {
     );
   }
 
-
-  renderNodeSelector() {
-    const { nodes, node, history } = this.props;
-
-    return (
-      <NodeSelect node={node} nodes={nodes} baseUrl="nodes" history={history} />
-    );
-  }
-
   render() {
-    const { gettingChains } = this.props;
+    const { gettingChains, nodes, history } = this.props;
 
     let { node } = this.props;
     if (gettingChains || !node) {
@@ -182,35 +172,19 @@ class Chains extends Component<Props> {
       },
     ];
 
-    const fields = [
-      {
-        title: 'Node',
-        value: this.renderNodeSelector(),
-      }, {
-        title: 'Host',
-        value: node.host,
-      }, {
-        title: 'Port',
-        value: node.port,
-      }, {
-        title: 'Total blocks',
-        value: formatter.formatNumber(node.totalBlocks),
-      }, {
-        title: 'Status',
-        value: node.status,
-      },
-    ];
-
-    // @ts-ignore
     return (
       <div className="blocks">
         <Toaster
           ref={this.refHandlers.toaster}
           position={Position.TOP_RIGHT}
         />
-        <Information
-          className={gettingChains ? 'bp3-skeleton' : ''}
-          fields={fields}
+        <NodeInformation
+          loading={gettingChains}
+          nodes={nodes}
+          node={node}
+          history={history}
+          baseUrl="nodes"
+          extraFields={['totalBlocks']}
           rightPart={this.renderSearch()}
         />
         { !_.isEmpty(node.chains) && (
@@ -230,7 +204,7 @@ class Chains extends Component<Props> {
 
 const mapStateToProps = (state: any) => ({
   nodes: state.NodesReducer.get('nodes'),
-  node: state.ChainsReducer.get('node.ts.tsx'),
+  node: state.ChainsReducer.get('node'),
   gettingChains: state.ChainsReducer.get('gettingChains'),
   searching: state.ChainsReducer.get('searching'),
   searchResult: state.ChainsReducer.get('searchResult'),

@@ -3,6 +3,9 @@ const winston = require('winston');
 const path = require('path');
 const homedir = require('os').homedir();
 
+const { format, transports } = winston;
+const { combine, timestamp, prettyPrint } = format;
+
 const LOG_FOLDER_PATH = path.join(homedir, 'incognito-logs');
 require('winston-daily-rotate-file');
 
@@ -14,7 +17,7 @@ const logger = winston.createLogger({
   level: 'verbose',
   format: winston.format.json(),
   transports: [
-    new (winston.transports.DailyRotateFile)({
+    new (transports.DailyRotateFile)({
       filename: path.join(LOG_FOLDER_PATH, 'error-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
@@ -22,7 +25,7 @@ const logger = winston.createLogger({
       maxFiles: '3d',
       level: 'error',
     }),
-    new (winston.transports.DailyRotateFile)({
+    new (transports.DailyRotateFile)({
       filename: path.join(LOG_FOLDER_PATH, 'combined-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
@@ -37,8 +40,11 @@ const logger = winston.createLogger({
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 //
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
+  logger.add(new transports.Console({
+    format: combine(
+      timestamp(),
+      prettyPrint()
+    ),
   }));
 }
 

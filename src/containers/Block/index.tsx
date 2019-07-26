@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Card } from '@blueprintjs/core';
 import { Link, RouteComponentProps } from 'react-router-dom';
 
-import Information from 'components/Information';
+import Information from 'components/common/Information';
 import BackButton from 'components/BackButton';
 import DataScrollable from 'components/DataScrollable';
 import formatter from 'utils/formatter';

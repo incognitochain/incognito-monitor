@@ -12,7 +12,7 @@ export const getChain = (nodeId: string, shardId: string, background: boolean = 
     background,
   });
 
-  electron.send('get-blocks', { nodeId, shardId }, TEST_CHAIN)
+  return electron.send('get-blocks', { nodeId, shardId }, TEST_CHAIN)
     .then((payload) => {
       dispatch({
         type: GET_CHAIN_SUCCESS,

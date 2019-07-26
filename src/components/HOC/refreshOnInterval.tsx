@@ -1,15 +1,26 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import _ from 'lodash';
+import { Spinner } from '@blueprintjs/core';
+
+import './index.scss';
 
 type Props = {
   autoRefresh: boolean,
   refreshTime: string,
 }
 
+type State = {
+  loading: boolean,
+}
+
 function refreshOnInterval(WrappedComponent: any) {
-  return class extends Component<Props> {
+  return class extends Component<Props, State> {
     interval?: number;
     refreshAction: (() => void) = _.noop;
+
+    state: State = {
+      loading: false,
+    };
 
     componentDidUpdate(prevProps: Props) {
       const { autoRefresh: prevAutoRefresh, refreshTime: prevRefreshTime } = prevProps;
@@ -30,8 +41,13 @@ function refreshOnInterval(WrappedComponent: any) {
 
     startRefresh = () => {
       const { refreshTime } = this.props;
-      this.interval = window.setInterval(() => {
-        this.refreshAction();
+      this.interval = window.setInterval(async () => {
+        const { loading } = this.state;
+        if (!loading) {
+          this.setState({ loading: true });
+          await this.refreshAction();
+          this.setState({ loading: false });
+        }
       }, parseInt(refreshTime, 10));
     };
 
@@ -48,12 +64,15 @@ function refreshOnInterval(WrappedComponent: any) {
     };
 
     render() {
-      // Wraps the input component in a container, without mutating it. Good!
+      const { loading } = this.state;
       return (
-        <WrappedComponent
-          {...this.props}
-          setRefreshAction={this.setRefreshAction}
-        />
+        <Fragment>
+          {loading && <Spinner size={Spinner.SIZE_SMALL} className="refresh-spinner" />}
+          <WrappedComponent
+            {...this.props}
+            setRefreshAction={this.setRefreshAction}
+          />
+        </Fragment>
       );
     }
   };

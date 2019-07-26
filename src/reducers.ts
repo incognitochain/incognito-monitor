@@ -6,6 +6,7 @@ import TransactionReducer from 'containers/Transaction/reducer';
 import CommitteesReducer from 'containers/Committees/reducer';
 import PendingTransactionsReducer from 'containers/PendingTransactions/reducer';
 import TokensReducer from 'containers/Tokens/reducer';
+import RPCReducer from 'containers/RPC/reducer';
 
 export default {
   NodesReducer,
@@ -16,4 +17,5 @@ export default {
   CommitteesReducer,
   PendingTransactionsReducer,
   TokensReducer,
+  RPCReducer,
 };

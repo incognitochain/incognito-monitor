@@ -156,4 +156,8 @@ for (const f of Object.getOwnPropertyNames(ConstantNodeRPC.prototype)) {
   };
 }
 
+ConstantNodeRPC.prototype.call = function(methodName, params) {
+  return rpc(methodName.toLowerCase(), this.client, params);
+};
+
 module.exports = ConstantNodeRPC;

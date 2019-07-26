@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import {
   Button, Icon, Card,
 } from '@blueprintjs/core';
-import Information from 'components/Information';
+import Information from 'components/common/Information';
 import DataScrollable from 'components/DataScrollable';
 import { getTransaction } from 'containers/Transaction/actions';
 import './index.scss';

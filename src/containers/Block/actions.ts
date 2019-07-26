@@ -11,7 +11,7 @@ export const getBlock = (nodeId: string, blockHash: string) => (dispatch: any) =
     type: GET_BLOCK,
   });
 
-  electron.send('get-block', { nodeId, blockHash }, TEST_BLOCK)
+  return electron.send('get-block', { nodeId, blockHash }, TEST_BLOCK)
     .then((payload) => {
       dispatch({
         type: GET_BLOCK_SUCCESS,

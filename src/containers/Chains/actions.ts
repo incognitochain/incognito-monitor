@@ -15,7 +15,7 @@ export const getChains = (nodeId: string, background: false = false) => (dispatc
     background,
   });
 
-  electron.send('get-chains', nodeId, TEST_NODE)
+  return electron.send('get-chains', nodeId, TEST_NODE)
     .then((payload) => {
       dispatch({
         type: GET_CHAINS_SUCCESS,

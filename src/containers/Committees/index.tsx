@@ -4,9 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Card } from '@blueprintjs/core';
 
-import Information from 'components/Information';
-import NodeSelect from 'components/NodeSelect';
-import formatter from 'utils/formatter';
+import NodeInformation from 'components/NodeInformation';
 
 import { getCommittees } from 'containers/Committees/actions';
 import './index.scss';
@@ -58,48 +56,24 @@ class Committees extends Component<Props> {
     this.nodeId = nodeId;
   }
 
-  renderNodeSelector() {
-    const { nodes, node, history } = this.props;
-
-    return (
-      <NodeSelect node={node} nodes={nodes} baseUrl="committees" history={history} />
-    );
-  }
-
   render() {
-    const { gettingCommittees } = this.props;
+    const { gettingCommittees, history, nodes } = this.props;
 
     let { node } = this.props;
     if (gettingCommittees) {
       node = MOCK_UP_NODE;
     }
 
-    const fields = [
-      {
-        title: 'Node',
-        value: this.renderNodeSelector(),
-      }, {
-        title: 'Host',
-        value: _.get(node, 'host'),
-      }, {
-        title: 'Port',
-        value:  _.get(node, 'port'),
-      }, {
-        title: 'Status',
-        value:  _.get(node, 'status'),
-      }, {
-        title: 'Epoch',
-        value: formatter.formatNumber(_.get(node, 'epoch', 0)),
-      },
-    ];
-
     const committees = _.get(node, 'committees', {});
 
     return (
       <div className={`committees ${gettingCommittees ? 'bp3-skeleton' : ''}`}>
-        <Information
-          className={gettingCommittees ? 'bp3-skeleton' : ''}
-          fields={fields}
+        <NodeInformation
+          loading={gettingCommittees}
+          node={node}
+          history={history}
+          nodes={nodes}
+          baseUrl="committees"
         />
         <Card className="p-10">
           <h4>Beacon Committees</h4>
@@ -148,7 +122,7 @@ class Committees extends Component<Props> {
 
 const mapStateToProps = (state: any) => ({
   nodes: state.NodesReducer.get('nodes'),
-  node: state.CommitteesReducer.get('node.ts.tsx'),
+  node: state.CommitteesReducer.get('node'),
   gettingCommittees: state.CommitteesReducer.get('gettingCommittees'),
 });
 

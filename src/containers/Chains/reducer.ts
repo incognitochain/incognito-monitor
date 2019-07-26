@@ -1,7 +1,6 @@
 import { Map } from 'immutable';
 import {
   GET_CHAINS,
-  GET_CHAINS_FAILED,
   GET_CHAINS_SUCCESS,
   SEARCH,
   SEARCH_FAILED,
@@ -22,10 +21,7 @@ actions[GET_CHAINS] = (state: any, action: any) => state
 
 actions[GET_CHAINS_SUCCESS] = (state: any, action: any) => state
   .set('gettingChains', false)
-  .set('node.ts.tsx', action.payload);
-
-actions[GET_CHAINS_FAILED] = (state: any) => state
-  .set('gettingChains', false);
+  .set('node', action.payload);
 
 actions[SEARCH] = (state: any) => state
   .set('searching', true);

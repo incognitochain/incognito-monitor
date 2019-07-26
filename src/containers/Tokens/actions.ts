@@ -12,7 +12,7 @@ export const getTokens = (nodeId: string, background: boolean = false) => (dispa
     background,
   });
 
-  electron.send('get-tokens', nodeId, TEST_NODE)
+  return electron.send('get-tokens', nodeId, TEST_NODE)
     .then((payload) => {
       dispatch({
         type: GET_TOKENS_SUCCESS,

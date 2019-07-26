@@ -6,7 +6,7 @@ import { Card } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
 
 import Table, { ColumnProps } from 'components/common/Table';
-import Information from 'components/Information';
+import Information from 'components/common/Information';
 import refreshOnInterval from 'components/HOC/refreshOnInterval';
 import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
 import BackButton from 'components/BackButton';
@@ -25,7 +25,7 @@ type Props = {
   setRefreshAction: any,
 }
 
-class Chain extends Component<any> {
+class Chain extends Component<Props> {
   chainIndex: number = -1;
   nodeId: string = '';
 

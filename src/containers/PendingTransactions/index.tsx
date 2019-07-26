@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Card } from '@blueprintjs/core';
 
-import Information from 'components/Information';
-import NodeSelect from 'components/NodeSelect';
 import Table from 'components/common/Table';
 import consumeRefreshContext from 'components/HOC/consumeRefreshContext';
 import refreshOnInterval from 'components/HOC/refreshOnInterval';
@@ -14,6 +12,7 @@ import refreshOnInterval from 'components/HOC/refreshOnInterval';
 import { getPendingTransactions } from 'containers/PendingTransactions/actions';
 import './index.scss';
 import MOCK_UP_NODE from './test_node.json';
+import NodeInformation from 'components/NodeInformation';
 
 type Props = {
   actions: any,
@@ -65,16 +64,8 @@ class PendingTransactions extends Component<Props> {
     this.nodeId = nodeId;
   }
 
-  renderNodeSelector() {
-    const { nodes, node, history } = this.props;
-
-    return (
-      <NodeSelect node={node} nodes={nodes} baseUrl="pending-transactions" history={history} />
-    );
-  }
-
   render() {
-    const { gettingPendingTransactions } = this.props;
+    const { gettingPendingTransactions, nodes, history } = this.props;
 
     let { node } = this.props;
     if (gettingPendingTransactions) {
@@ -96,29 +87,16 @@ class PendingTransactions extends Component<Props> {
       },
     ];
 
-    const fields = [
-      {
-        title: 'Node',
-        value: this.renderNodeSelector(),
-      }, {
-        title: 'Host',
-        value: _.get(node, 'host'),
-      }, {
-        title: 'Port',
-        value:  _.get(node, 'port'),
-      }, {
-        title: 'Status',
-        value:  _.get(node, 'status'),
-      },
-    ];
-
     const transactions = _.get(node, 'transactions') || [];
 
     return (
       <div className="blocks">
-        <Information
-          className={gettingPendingTransactions ? 'bp3-skeleton' : ''}
-          fields={fields}
+        <NodeInformation
+          loading={gettingPendingTransactions}
+          node={node}
+          history={history}
+          nodes={nodes}
+          baseUrl="pending-transactions"
         />
         <Card className="no-padding">
           <Table
@@ -135,7 +113,7 @@ class PendingTransactions extends Component<Props> {
 
 const mapStateToProps = (state: any) => ({
   nodes: state.NodesReducer.get('nodes'),
-  node: state.PendingTransactionsReducer.get('node.ts.tsx'),
+  node: state.PendingTransactionsReducer.get('node'),
   gettingPendingTransactions: state.PendingTransactionsReducer.get('gettingPendingTransactions'),
 });
 

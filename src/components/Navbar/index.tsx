@@ -25,9 +25,8 @@ const Navbar: React.FC<Props> = ({
     <BSNavBar className="navbar no-padding-left">
       <NavbarGroup align={Alignment.LEFT}>
         <NavLink
+          isActive={(match, location) => location.pathname === '/'}
           to="/"
-          isActive={(match, location) => location.pathname === '/'
-            || location.pathname.indexOf('index.tsx.ts.ts.tsx.tsx.tsz.ts.tsx.tsx.tsx.tsx.ts.tsx.tsx.tsx.tsx.tsx.tsx.tsx.tsx.tsx.tsx.tsx.tsx.ts.html') > -1}
           activeClassName="is-active"
         >
           <Button large className={Classes.MINIMAL} text="Nodes" />
@@ -43,6 +42,9 @@ const Navbar: React.FC<Props> = ({
         </NavLink>
         <NavLink to="/tokens/" activeClassName="is-active">
           <Button large className={Classes.MINIMAL} text="Tokens" />
+        </NavLink>
+        <NavLink to="/rpc/" activeClassName="is-active">
+          <Button large className={Classes.MINIMAL} text="RPC" />
         </NavLink>
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
@@ -60,7 +62,7 @@ const Navbar: React.FC<Props> = ({
         <Button icon="refresh" onClick={onToggleAutoRefresh} minimal>
           Auto-refresh: {autoRefresh ? 'ON' : 'OFF'}
         </Button>
-        <div>
+        <div className="app-version">
           V{process.env.REACT_APP_VERSION}
         </div>
       </NavbarGroup>

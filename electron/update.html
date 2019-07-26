@@ -21,11 +21,56 @@
     </style>
 </head>
 <body>
-<div>
+<script>
+  const {ipcRenderer} = require('electron');
+  ipcRenderer.on('download-progress', function(event, text) {
+    const content = document.getElementById('content');
+    content.innerText = text;
+  });
+
+  ipcRenderer.on('update-downloaded', function(event) {
+    const content = document.getElementById('content');
+    const okButton = document.createElement('button');
+    const cancelButton = document.createElement('button');
+    const buttons = document.createElement('div');
+
+    okButton.innerText = 'OK';
+    cancelButton.innerText = 'Cancel';
+
+    buttons.appendChild(cancelButton);
+    buttons.appendChild(okButton);
+
+    okButton.addEventListener('click', function() {
+      ipcRenderer.send('update')
+    });
+
+    cancelButton.addEventListener('cancel', function() {
+      ipcRenderer.send('cancel');
+    });
+
+    content.innerText = 'Do you want to close and update your app';
+
+    content.appendChild(buttons);
+  });
+
+  function cancel() {
+    ipcRenderer.send('cancel');
+  }
+
+  function download() {
+    ipcRenderer.send('download')
+  }
+</script>
+<div id="content">
     <h1>Update Available</h1>
     <p>
-        A new version of Incognito Monitor is available. You can download it on <a href="https://github.com/incognitochain/incognito-monitor/releases"> this link</a>
+        A new version of Incognito Monitor is available. You can download it manually on <a href="https://github.com/incognitochain/incognito-monitor/releases"> this link</a>
+        or click on 'Download' button below to download the update.
     </p>
+    <div>
+        <button onclick="cancel()">Cancel</button>
+        <button onclick="download()">Download</button>
+    </div>
 </div>
 </body>
 </html>

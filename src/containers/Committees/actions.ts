@@ -12,7 +12,7 @@ export const getCommittees = (nodeId: string, background: boolean = false) => (d
     background,
   });
 
-  electron.send('get-committees', nodeId, TEST_NODE)
+  return electron.send('get-committees', nodeId, TEST_NODE)
     .then((payload) => {
       dispatch({
         type: GET_COMITEES_SUCCESS,

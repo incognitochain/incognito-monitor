@@ -11,7 +11,7 @@ export const getTransaction = (nodeId: string, transactionHash: string) => (disp
     type: GET_TRANSACTION,
   });
 
-  electron.send('get-transaction', { nodeId, transactionHash }, TEST_TRANSACTION)
+  return electron.send('get-transaction', { nodeId, transactionHash }, TEST_TRANSACTION)
     .then((payload) => {
       dispatch({
         type: GET_TRANSACTION_SUCCESS,

@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Card, Divider } from '@blueprintjs/core';
 
-import './index.scss';
+import 'components/common/Information/index.scss';
 
 const DEFAULT_MAX_WIDTH = 400;
 

@@ -4,14 +4,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Card } from '@blueprintjs/core';
 
-import Information from 'components/Information';
-import NodeSelect from 'components/NodeSelect';
 import Table from 'components/common/Table';
 import formatter from 'utils/formatter';
 
 import { getTokens } from 'containers/Tokens/actions';
 import './index.scss';
 import MOCK_UP_NODE from './test_node.json';
+import NodeInformation from 'components/NodeInformation';
 
 type Props = {
   actions: any,
@@ -59,16 +58,8 @@ class Tokens extends Component<Props> {
     this.nodeId = nodeId;
   }
 
-  renderNodeSelector() {
-    const { nodes, node, history } = this.props;
-
-    return (
-      <NodeSelect node={node} nodes={nodes} baseUrl="tokens" history={history} />
-    );
-  }
-
   render() {
-    const { gettingTokens } = this.props;
+    const { gettingTokens, history, nodes } = this.props;
 
     let { node } = this.props;
     if (gettingTokens) {
@@ -106,29 +97,16 @@ class Tokens extends Component<Props> {
       },
     ];
 
-    const fields = [
-      {
-        title: 'Node',
-        value: this.renderNodeSelector(),
-      }, {
-        title: 'Host',
-        value: _.get(node, 'host'),
-      }, {
-        title: 'Port',
-        value:  _.get(node, 'port'),
-      }, {
-        title: 'Status',
-        value:  _.get(node, 'status'),
-      },
-    ];
-
     const tokens = _.get(node, 'tokens') || [];
 
     return (
       <div className="tokens">
-        <Information
-          className={gettingTokens ? 'bp3-skeleton' : ''}
-          fields={fields}
+        <NodeInformation
+          loading={gettingTokens}
+          node={node}
+          history={history}
+          nodes={nodes}
+          baseUrl="tokens"
         />
         <Card className="no-padding">
           <Table
@@ -146,7 +124,7 @@ class Tokens extends Component<Props> {
 
 const mapStateToProps = (state: any) => ({
   nodes: state.NodesReducer.get('nodes'),
-  node: state.TokensReducer.get('node.ts.tsx'),
+  node: state.TokensReducer.get('node'),
   gettingTokens: state.TokensReducer.get('gettingTokens'),
 });
 

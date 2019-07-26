@@ -12,4 +12,5 @@ module.exports =  {
   GET_COMMITTEES: 'get-committees',
   GET_PENDING_TRANSACTIONS: 'get-pending-transactions',
   GET_TOKENS: 'get-tokens',
+  CALL_RPC: 'call-rpc',
 };

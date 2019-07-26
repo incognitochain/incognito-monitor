@@ -15,6 +15,7 @@ import Block from 'containers/Block';
 import Transaction from 'containers/Transaction';
 import Committees from 'containers/Committees';
 import Tokens from 'containers/Tokens';
+import RPC from 'containers/RPC';
 import PendingTransactions from 'containers/PendingTransactions';
 import RefreshContext from 'components/Contexts/RefreshContext';
 import { getNodes } from 'containers/Nodes/actions';
@@ -113,6 +114,7 @@ class App extends Component<Props, State> {
             <Route exact path="/nodes/:nodeId([a-zA-Z0-9 _-]+)/transactions/:transactionHash" component={Transaction} />
             <Route exact path="/pending-transactions/:nodeId([a-zA-Z0-9 _-]*)" component={PendingTransactions} />
             <Route exact path="/tokens/:nodeId([a-zA-Z0-9 _-]*)" component={Tokens} />
+            <Route exact path="/rpc/:nodeId([a-zA-Z0-9 _-]*)" component={RPC} />
           </div>
         </RefreshContext.Provider>
       </div>
