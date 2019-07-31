@@ -3,11 +3,12 @@ import './index.scss';
 
 type Props = {
   data: any,
+  space?: number,
 }
 
-const DataScrollable: React.FC<Props> = ({ data }) => {
+const DataScrollable: React.FC<Props> = ({ data, space = 4 }) => {
   return (
-    <textarea readOnly className="data-scrollable" value={JSON.stringify(data, null, 4)} />
+    <textarea readOnly className="data-scrollable" value={JSON.stringify(data, null, space)} />
   );
 };
 

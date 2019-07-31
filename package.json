@@ -5,7 +5,7 @@
     "name": "Incognito",
     "email": "incognito@autonomous.nyc"
   },
-  "version": "0.9.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/incognitochain/incognito-monitor.git"
@@ -79,7 +79,7 @@
     "build-electron": "webpack --config ./config/webpack.electron.config.js",
     "test": "node scripts/test.js",
     "electron": "electron ./electron",
-    "package": "rm -rf dist/ && electron-builder -mwl",
+    "package": "rimraf -rf dist/ && electron-builder -mwl",
     "release": "yarn build-react && electron-builder --publish=always",
     "build": "yarn build-electron && yarn build-react && yarn package",
     "publish": "build -mwl -p always",
@@ -212,6 +212,7 @@
     "postcss-safe-parser": "4.0.1",
     "react-dev-utils": "^9.0.1",
     "resolve": "1.10.0",
+    "rimraf": "^2.6.3",
     "sass-loader": "7.1.0",
     "semver": "6.0.0",
     "style-loader": "0.23.1",

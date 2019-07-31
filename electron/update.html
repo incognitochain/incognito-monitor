@@ -1,12 +1,35 @@
 <html>
 <head>
     <style>
-        div {
-            width: 300px;
-            height: 150px;
+        #content {
             text-align: center;
             padding: 30px;
             color: #767676;
+        }
+
+        button {
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            padding: 5px 10px;
+            vertical-align: middle;
+            text-align: left;
+            font-size: 14px;
+            min-width: 30px;
+            min-height: 30px;
+            background-color: #f5f8fa;
+            box-shadow: inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1);
+            margin-top: 20px;
+            margin-right: 15px;
+        }
+
+        button.primary {
+            color: white;
+            background-color: #137cbd;
         }
 
         h1 {
@@ -40,15 +63,17 @@
     buttons.appendChild(cancelButton);
     buttons.appendChild(okButton);
 
+    okButton.classList.add('primary');
+
     okButton.addEventListener('click', function() {
       ipcRenderer.send('update')
     });
 
-    cancelButton.addEventListener('cancel', function() {
+    cancelButton.addEventListener('click', function() {
       ipcRenderer.send('cancel');
     });
 
-    content.innerText = 'Do you want to close and update your app';
+    content.innerText = 'Do you want to close and update your app?';
 
     content.appendChild(buttons);
   });
@@ -62,14 +87,16 @@
   }
 </script>
 <div id="content">
-    <h1>Update Available</h1>
-    <p>
-        A new version of Incognito Monitor is available. You can download it manually on <a href="https://github.com/incognitochain/incognito-monitor/releases"> this link</a>
-        or click on 'Download' button below to download the update.
-    </p>
-    <div>
-        <button onclick="cancel()">Cancel</button>
-        <button onclick="download()">Download</button>
+    <div class="update-available">
+        <h1>Update Available</h1>
+        <p>
+            A new version of Incognito Monitor is available. You can download it manually on <a href="https://github.com/incognitochain/incognito-monitor/releases"> this link</a>
+            or click on 'Download' button below to download the update. (Currently, auto update hasn't supported Mac OSX. So Mac users need to download and install it manually)
+        </p>
+        <div>
+            <button onclick="cancel()">Cancel</button>
+            <button class="primary" onclick="download()">Download</button>
+        </div>
     </div>
 </div>
 </body>

@@ -236,7 +236,7 @@ function createWindow() {
 
 app.on('ready', () => {
   createWindow();
-  // appUpdater.checkForUpdates();
+  appUpdater.checkForUpdates();
 });
 
 app.on('window-all-closed', () => {

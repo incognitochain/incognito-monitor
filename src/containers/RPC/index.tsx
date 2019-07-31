@@ -25,19 +25,21 @@ type Props = {
 
 type State = {
   methods: any,
+  result: any,
 }
 
 const DEFAULT_METHODS = {
-  'GetBeaconBestState': { params: '[]', result: '' },
-  'GetShardBestState': { params: '[]', result: '' },
-  'GetMempoolInfo': { params: '[]', result: '' },
-  'GetBeaconPoolState': { params: '[]', result: '' },
-  'GetShardPoolState': { params: '[]', result: '' }
+  'GetBeaconBestState': { params: '[]' },
+  'GetShardBestState': { params: '[]' },
+  'GetMempoolInfo': { params: '[]' },
+  'GetBeaconPoolState': { params: '[]' },
+  'GetShardPoolState': { params: '[]' }
 };
 
 class Tokens extends Component<Props, State> {
   state = {
     methods: { ...DEFAULT_METHODS },
+    result: [],
   };
 
   nodeId: string = '';
@@ -49,7 +51,7 @@ class Tokens extends Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const { match: prevMatch, node: prevNode, result: prevResult } = prevProps;
     const {
-      match, node, method, result,
+      match, node, result,
     } = this.props;
     const prevNodeId = prevMatch.params.nodeId || _.get(prevNode, 'id');
     const currentNodeId = match.params.nodeId || _.get(node, 'id');
@@ -59,11 +61,10 @@ class Tokens extends Component<Props, State> {
     }
 
     if (prevResult !== result) {
-      const newMethods : any = { ...this.state.methods };
-      newMethods[method].result = result;
+      const newResult = [...this.state.result, result];
 
       this.setState({
-        methods: newMethods,
+        result: newResult,
       })
     }
   }
@@ -105,9 +106,13 @@ class Tokens extends Component<Props, State> {
     actions.call(this.nodeId, name, params);
   }
 
+  onClear = () => {
+    this.setState({ result: [] });
+  };
+
   render() {
     const { gettingTokens, history, nodes } = this.props;
-    const { methods } = this.state;
+    const { methods, result } = this.state;
 
     let { node } = this.props;
     if (gettingTokens) {
@@ -125,29 +130,41 @@ class Tokens extends Component<Props, State> {
         />
         <Card className="no-padding">
           <Card className="rpc-method method-header">
-            <div className="method-name">Name</div>
-            <div className="method-params">Params</div>
-            <div className="method-result">Result</div>
+            <div className="method-header-1">
+              <div className="method-name">Name</div>
+              <div className="method-params">Params</div>
+            </div>
+            <div className="method-result">
+              Result
+
+              <Button className="clear-btn" onClick={this.onClear}>
+                Clear
+              </Button>
+            </div>
           </Card>
-          {_.map(methods, (method, name) => (
-            <Card className="rpc-method">
-              <div className="method-name">{name}</div>
-              <div className="method-params">
-                <input
-                  onChange={this.onChange.bind(this, name)}
-                  defaultValue={method.params}
-                />
-              </div>
-              <div className="method-result">
-                <DataScrollable data={method.result} />
-              </div>
-              <div className="method-actions">
-                <Button onClick={this.onCall.bind(this, name)}>
-                  Call
-                </Button>
-              </div>
+          <div className="rpc-methods-wrapper">
+              <div className="rpc-methods">
+              {_.map(methods, (method, name) => (
+                <Card className="rpc-method">
+                  <div className="method-name">{name}</div>
+                  <div className="method-params">
+                    <input
+                      onChange={this.onChange.bind(this, name)}
+                      defaultValue={method.params}
+                    />
+                  </div>
+                  <div className="method-actions">
+                    <Button onClick={this.onCall.bind(this, name)}>
+                      Call
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+            <Card className="methods-result">
+              <DataScrollable data={result} space={1} />
             </Card>
-          ))}
+          </div>
         </Card>
       </div>
     );

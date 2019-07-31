@@ -37,7 +37,7 @@ module.exports = (ipcMain) => {
   });
 
   autoUpdater.on('download-progress', (progressObj) => {
-    const percent = `${_.round(_.toInteger(progressObj.percent) , 2)}%`;
+    const percent = `Downloaded: ${_.round(_.toInteger(progressObj.percent) , 2)}%`;
     win.webContents.send('download-progress', percent);
   });
 
