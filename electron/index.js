@@ -219,6 +219,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
+    icon: path.join(__dirname, 'icon.png'),
   });
   mainWindow.loadURL(isDev
     ? 'http://localhost:3000'

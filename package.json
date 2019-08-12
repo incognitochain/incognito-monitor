@@ -5,7 +5,7 @@
     "name": "Incognito",
     "email": "incognito@autonomous.nyc"
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/incognitochain/incognito-monitor.git"
@@ -13,11 +13,14 @@
   "main": "./electron/build.js",
   "build": {
     "appId": "incognito.monitoor",
+    "directories": {
+      "buildResources": "./electron"
+    },
     "mac": {
       "category": "incognito"
     },
     "win": {
-      "target": "nsis"
+      "target": "portable"
     },
     "linux": {
       "target": "AppImage"
@@ -27,7 +30,8 @@
       "build/**/*",
       "data.sample",
       "electron/build.js",
-      "electron/update.html"
+      "electron/update.html",
+      "electron/icon.png"
     ],
     "extraResources": [
       {
