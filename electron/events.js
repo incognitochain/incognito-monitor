@@ -13,4 +13,9 @@ module.exports =  {
   GET_PENDING_TRANSACTIONS: 'get-pending-transactions',
   GET_TOKENS: 'get-tokens',
   CALL_RPC: 'call-rpc',
+  START_LOCAL_NODE: 'start-node',
+  STOP_LOCAL_NODE: 'stop-node',
+  GET_LOCAL_NODE_STATUS: 'get-local-node-status',
+  CHANGE_CONFIG: 'change-config',
+  GET_CONFIG: 'get-config',
 };

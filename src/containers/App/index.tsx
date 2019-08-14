@@ -36,6 +36,8 @@ type State = {
   autoRefresh: boolean,
   refreshTime: string,
   firstTimeLoaded: boolean,
+  isShowSettingsModal: boolean,
+  error: string,
 }
 
 class App extends Component<Props, State> {
@@ -46,6 +48,8 @@ class App extends Component<Props, State> {
       autoRefresh: true,
       refreshTime: '5000',
       firstTimeLoaded: false,
+      isShowSettingsModal: false,
+      error: '',
     };
 
     const { actions } = props;
