@@ -12,6 +12,8 @@ import HealthPanel from 'containers/Nodes/HealthPanel';
 
 import './index.scss';
 import { addNode, getNodes, deleteNode } from 'containers/Nodes/actions';
+import SettingsDialog from 'components/SettingsDialog';
+import Dialog from 'components/common/Dialog';
 
 type Props = {
   actions: any,
@@ -26,11 +28,16 @@ class Nodes extends Component<Props> {
   state = {
     showNewNodeDialog: false,
     newNodeError: null,
+    isShowSettingsModal: false,
+    error: '',
   };
+
+  settings: any;
 
   componentDidMount() {
     const { setRefreshAction, actions } = this.props;
     setRefreshAction(() => actions.getNodes(true));
+    this.settings = electron.sendSync('get-config');
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -82,6 +89,44 @@ class Nodes extends Component<Props> {
     actions.deleteNode(nodeId);
   };
 
+  onStartNode = () => {
+    const result = electron.sendSync('start-node');
+    if (result.status) {
+      this.props.actions.getNodes();
+    } else {
+      this.setState({ error: result.message });
+    }
+  };
+
+  onStopNode = () => {
+    const result = electron.sendSync('stop-node');
+    this.props.actions.getNodes();
+    return result;
+  };
+
+  onShowSettings = () => {
+    this.setState({
+      isShowSettingsModal: true
+    });
+  };
+
+  onCloseSettings = (): any => {
+    this.setState({
+      isShowSettingsModal: false
+    });
+  };
+
+  onSaveSettings = (settings: any): void => {
+    console.debug(settings);
+    electron.sendSync('change-config', settings);
+    this.settings = settings;
+    this.onCloseSettings();
+  };
+
+  onCloseErrorModal = (): any => {
+    this.setState({ error: '' });
+  };
+
   getNodes() {
     const { actions } = this.props;
     actions.getNodes();
@@ -122,7 +167,7 @@ class Nodes extends Component<Props> {
       nodes, gettingNodes, addingNode, deletingNode,
     } = this.props;
     const {
-      showNewNodeDialog, newNodeError,
+      showNewNodeDialog, newNodeError, isShowSettingsModal
     } = this.state;
 
     return (
@@ -137,7 +182,22 @@ class Nodes extends Component<Props> {
           onDelete={this.onDelete}
           loading={gettingNodes || addingNode || deletingNode}
           newNodeError={newNodeError}
+          onShowSetting={this.onShowSettings}
+          onStopNode={this.onStopNode}
+          onStartNode={this.onStartNode}
         />
+        <SettingsDialog
+          isOpen={isShowSettingsModal}
+          settings={this.settings}
+          onSave={this.onSaveSettings}
+          onClose={this.onCloseSettings}
+        />
+        {this.state.error && <Dialog
+          title="Start Local Node Error"
+          body={this.state.error}
+          isOpen
+          onClose={this.onCloseErrorModal}
+        /> }
       </div>
     );
   }

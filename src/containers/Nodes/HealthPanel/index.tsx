@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import {
@@ -21,6 +21,9 @@ type Props = {
   onDelete: any,
   loading: any,
   newNodeError: any,
+  onStopNode: any,
+  onStartNode: any,
+  onShowSetting: any,
 }
 
 const HealthPanel: React.FC<Props> = ({
@@ -33,6 +36,9 @@ const HealthPanel: React.FC<Props> = ({
   loading,
   newNodeError,
   onDelete,
+  onStopNode,
+  onStartNode,
+  onShowSetting,
 }) => {
   const columns = [{
     key: 'name',
@@ -56,7 +62,7 @@ const HealthPanel: React.FC<Props> = ({
   }, {
     key: 'role',
     displayName: 'Role',
-    width: 150,
+    width: 100,
   }, {
     key: 'status',
     displayName: 'Status',
@@ -74,7 +80,7 @@ const HealthPanel: React.FC<Props> = ({
   }, {
     key: 'epoch',
     displayName: 'Epoch',
-    width: 80,
+    width: 70,
     formatter: formatter.formatNumber,
   }, {
     key: 'reward',
@@ -83,16 +89,33 @@ const HealthPanel: React.FC<Props> = ({
   }, {
     key: 'id',
     displayName: '',
-    formatter: (id: string) => (
-      <Button
-        onClick={() => onDelete(id)}
-        minimal
-        icon="delete"
-        name={id}
-        className="btn-delete"
-      />
-    ),
-    width: 50,
+    formatter: (id: string) => {
+      // Todo: optimize this
+      const node = data.find((i: any) => i.id === id);
+      return <Fragment>
+        <Button
+          onClick={() => onDelete(id)}
+          minimal
+          icon="delete"
+          name={id}
+          className="btn-delete"
+        />
+        { node.host === '127.0.0.1' && node.port === '9334' && <Fragment>
+          <Button
+            title="Change local node settings"
+            icon="settings"
+            onClick={onShowSetting}
+            minimal
+            className="btn-delete"
+          />
+          { node.status === 'ONLINE' ?
+            <Button className="btn-delete" title="Stop local node" icon="stop" onClick={onStopNode} minimal /> :
+            <Button className="btn-delete" title="Start local node" icon="play" onClick={onStartNode} minimal />
+          }
+        </Fragment>}
+      </Fragment>
+    },
+    width: 120,
   }];
 
   return (

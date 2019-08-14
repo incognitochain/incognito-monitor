@@ -19,7 +19,7 @@ type Props = {
 }
 
 const Navbar: React.FC<Props> = ({
-  autoRefresh, onToggleAutoRefresh, refreshTime, onChangeRefreshTime,
+  autoRefresh, onToggleAutoRefresh, refreshTime, onChangeRefreshTime
 }) => {
   return (
     <BSNavBar className="navbar no-padding-left">

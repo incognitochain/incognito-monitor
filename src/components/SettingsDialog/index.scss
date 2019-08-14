@@ -1,0 +1,21 @@
+.settings-dialog-footer {
+  text-align: right;
+
+  .add-btn {
+    margin-left: 20px;
+  }
+
+  .cancel-btn {
+
+  }
+}
+
+.settings-dialog-body {
+  label {
+    min-width: 60px;
+  }
+}
+
+.settings-dialog {
+  max-width: 300px;
+}

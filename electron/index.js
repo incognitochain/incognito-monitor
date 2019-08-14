@@ -1,9 +1,18 @@
 const {
   app, BrowserWindow, ipcMain, dialog,
 } = require('electron');
+const fs = require('fs');
+const util = require('util');
+const fixPath = require('fix-path');
+
+fixPath();
+
+const exec = util.promisify(require('child_process').exec);
+const shell = require('shelljs');
 const path = require('path');
 const _ = require('lodash');
 const isDev = require('electron-is-dev');
+const os = require('os');
 const updater = require('./updater');
 const ConstantRPC = require('./incognitoRpc');
 const {
@@ -21,6 +30,11 @@ const {
   GET_PENDING_TRANSACTIONS,
   GET_TOKENS,
   CALL_RPC,
+  GET_LOCAL_NODE_STATUS,
+  START_LOCAL_NODE,
+  STOP_LOCAL_NODE,
+  CHANGE_CONFIG,
+  GET_CONFIG,
 } = require('./events');
 const utils = require('./utils');
 const nodeController = require('./node');
@@ -29,9 +43,24 @@ const blockController = require('./block');
 const transactionController = require('./transaction');
 const tokenController = require('./token');
 
+
+const homedir = os.homedir();
 const appUpdater = updater(ipcMain);
 const { logger } = utils;
 const SHARD_BLOCK_HEIGHT_REGEX = /^(-1|[1-9][0-9]*):[a-zA-Z0-9]*$/;
+const CONFIG_FILE_PATH = path.join(homedir, '.incognito.config');
+
+let config = {};
+
+if (fs.existsSync(CONFIG_FILE_PATH)) {
+  try {
+    const rawConfig = fs.readFileSync(CONFIG_FILE_PATH)
+    config = JSON.parse(rawConfig);
+  } catch (error) {
+    // Delete config file if error occur
+    fs.unlinkSync(CONFIG_FILE_PATH);
+  }
+}
 
 let mainWindow;
 
@@ -192,6 +221,79 @@ async function callRPC(event, { nodeId, method, params }) {
   }
 }
 
+async function changeConfig(event, newConfig) {
+  config = newConfig;
+  fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(config, null, 4));
+  event.returnValue = true;
+}
+
+async function startLocalNode(event) {
+  try {
+    await exec('docker version');
+    const shPath = path.join(__dirname, isDev ? '../run.sh' : '../../run.sh');
+    let shCommand = fs.readFileSync(shPath, 'utf-8');
+    shCommand = shCommand
+      .replace('$1', config.privateKey)
+      .replace('$2', config.clearDatabase ? 'y' : 'n')
+      .replace('$3', homedir);
+    shell.exec(shCommand, (code, stdout, stderr) => {
+      setTimeout(() => {
+        event.returnValue = {
+          status: true,
+        };
+      }, 2000);
+    });
+  } catch(error) {
+    const {stderr} = error;
+    event.returnValue = {
+      status: false,
+      message: stderr,
+      error,
+    };
+  }
+}
+
+async function stopLocalNode(event) {
+  try {
+    await exec('docker stop inc_miner');
+    await exec('docker stop inc_geth');
+    event.returnValue = {
+      status: true,
+    };
+  } catch(error) {
+    const {stderr} = error;
+    event.returnValue = {
+      status: false,
+      stderr
+    };
+  }
+}
+
+async function getLocalNodeStatus(event) {
+  try {
+    const { stdout } = await exec(`docker inspect -f '{{.State.Running}}' inc_miner`);
+    if (stdout.toString().includes('true')) {
+      event.returnValue = true;
+    }
+    event.returnValue = false;
+  } catch (error) {
+    event.returnValue = false;
+  }
+  const rpc = new ConstantRPC('127.0.0.1', '9334');
+  try {
+    await rpc.GetNetworkInfo();
+    event.returnValue = true;
+  } catch (error) {
+    event.returnValue = false;
+  }
+}
+
+function getConfig(event) {
+  event.returnValue = config;
+}
+
+// startLocalNode();
+
 ipcMain.on(ADD_NODE, addNode);
 ipcMain.on(DELETE_NODE, deleteNode);
 ipcMain.on(GET_NODES, getNodes);
@@ -206,6 +308,11 @@ ipcMain.on(GET_COMMITTEES, getCommittees);
 ipcMain.on(GET_PENDING_TRANSACTIONS, getPendingTransactions);
 ipcMain.on(GET_TOKENS, getTokens);
 ipcMain.on(CALL_RPC, callRPC);
+ipcMain.on(START_LOCAL_NODE, startLocalNode);
+ipcMain.on(STOP_LOCAL_NODE, stopLocalNode);
+ipcMain.on(GET_LOCAL_NODE_STATUS, getLocalNodeStatus);
+ipcMain.on(CHANGE_CONFIG, changeConfig);
+ipcMain.on(GET_CONFIG, getConfig);
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -219,7 +326,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
-    icon: path.join(__dirname, 'icon.png'),
+    icon: path.join(__dirname, isDev ? '../icon.png' : '../../icon.png'),
   });
   mainWindow.loadURL(isDev
     ? 'http://localhost:3000'
