@@ -137,6 +137,10 @@ class ConstantNodeRPC {
   GetRewardAmount(data = "") {}
 
   ListRewardAmount() {}
+
+  GetPublicKeyMining() {}
+
+  GetMinerRewardFromMiningKey(key) {}
 }
 
 // Implement virtual method

@@ -48,6 +48,8 @@ function findNode(nodeId) {
   return nodes.find(item => item.id === nodeId);
 }
 
+const fullNodeRPC = new ConstantRPC('test-node.incognito.org', '9334');
+
 /**
  * Get node information
  * @param {Object} node
@@ -72,7 +74,14 @@ async function getFullNodeInfo(node) {
     totalBlocks = blocks.reduce((sum, numBlocks) => sum + numBlocks);
 
     const state = await rpc.GetBeaconBestState();
-    reward = await rpc.GetRewardAmount("") || {};
+
+    const key = await rpc.GetPublicKeyMining();
+
+    if (key && key.length > 0) {
+      reward = await fullNodeRPC.GetMinerRewardFromMiningKey(key[0]) || {};
+    } else {
+      reward = {};
+    }
 
     Object.keys(reward).forEach(key => {
       reward[key] = reward[key] / 1e9;
