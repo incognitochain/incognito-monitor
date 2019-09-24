@@ -2,6 +2,14 @@ const jayson = require('jayson');
 
 const RPCClient = function (host, port) {
   // create a client
+  if (host.includes('test-node.incognito.org')) {
+    const client = jayson.client.https({
+      host: 'test-node.incognito.org',
+      port: 443,
+    });
+    return client;
+  }
+
   const client = jayson.client.http({
     host: host || '127.0.0.1',
     port: port || 9334,
