@@ -10,6 +10,14 @@ const RPCClient = function (host, port) {
     return client;
   }
 
+  if (host.includes('mainnet.incognito.org')) {
+    const client = jayson.client.http({
+      host: 'mainnet.incognito.org',
+      port: 9334,
+    });
+    return client;
+  }
+
   const client = jayson.client.http({
     host: host || '127.0.0.1',
     port: port || 9334,

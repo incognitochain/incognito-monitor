@@ -49,6 +49,7 @@ function findNode(nodeId) {
 }
 
 const fullNodeRPC = new ConstantRPC('test-node.incognito.org', '9334');
+const mainFullNodeRPC = new ConstantRPC('mainnet.incognito.org', '9334');
 
 /**
  * Get node information
@@ -63,24 +64,32 @@ async function getFullNodeInfo(node) {
   let epoch;
   let role;
   let reward;
+  let network;
   try {
     const rpc = new ConstantRPC(node.host, node.port);
-    await rpc.GetNetworkInfo();
+    const info = await rpc.GetBlockChainInfo();
+    network = info.ChainName;
     status = 'ONLINE';
-    const beaconInfo = await rpc.GetBeaconBestState();
-    totalShards = beaconInfo.ActiveShards;
+    totalShards = info.ActiveShards;
     const blocks = await Promise.all(_.range(-1, totalShards)
-      .map(shardIndex => rpc.GetBlockCount(shardIndex)));
+      .map(shardIndex => info.BestBlocks[shardIndex].Height));
     totalBlocks = blocks.reduce((sum, numBlocks) => sum + numBlocks);
+    role = await rpc.GetNodeRole();
 
     const state = await rpc.GetBeaconBestState();
 
-    const key = await rpc.GetPublicKeyMining();
-
-    if (key && key.length > 0) {
-      reward = await fullNodeRPC.GetMinerRewardFromMiningKey(key[0]) || {};
-    } else {
-      reward = {};
+    if (role) {
+      const key = await rpc.GetPublicKeyMining();
+      if (key && key.length > 0) {
+        if (network === 'mainnet') {
+          console.log('KEY', key, network);
+          reward = await mainFullNodeRPC.GetMinerRewardFromMiningKey(key[0]) || {};
+        } else {
+          reward = await fullNodeRPC.GetMinerRewardFromMiningKey(key[0]) || {};
+        }
+      } else {
+        reward = {};
+      }
     }
 
     Object.keys(reward).forEach(key => {
@@ -88,9 +97,7 @@ async function getFullNodeInfo(node) {
     });
 
     beaconHeight = state.BeaconHeight;
-    epoch = beaconInfo.Epoch;
-
-    role = await rpc.GetNodeRole();
+    epoch = state.Epoch;
   } catch (error) {
     logger.error('Get node information failed', { node, error });
   }
