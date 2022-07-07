@@ -71,7 +71,7 @@
     "immutable": "^4.0.0-rc.12",
     "jayson": "^3.0.2",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "react": "^16.8.6",
     "react-app-polyfill": "^1.0.1",
     "react-dev-utils": "^9.0.1",
